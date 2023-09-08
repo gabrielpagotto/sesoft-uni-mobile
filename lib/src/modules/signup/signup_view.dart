@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:sesoft_uni_mobile/src/widgets/sesoft_bottom_bar_container.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_elevated_button.dart';
-import 'package:sesoft_uni_mobile/src/widgets/sesoft_logo.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_scaffold.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_text_form_field.dart';
 
@@ -13,11 +13,17 @@ class SignupView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SesoftScaffold(
-      titleText: 'Cadastrar-se',
+      titleText: 'Registrar-se no Sesoft Uni',
       body: ListView(
         padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
         children: [
-          const SesoftLogo(),
+          Padding(
+            padding: const EdgeInsets.all(10.0).copyWith(bottom: 50),
+            child: const Text(
+              'Para se cadastrar no aplicativo informe seus dados.',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 29),
+            ),
+          ),
           const SesoftTextFormField(
             textInputAction: TextInputAction.next,
             keyboardType: TextInputType.name,
@@ -43,15 +49,17 @@ class SignupView extends StatelessWidget {
             keyboardType: TextInputType.visiblePassword,
             labelText: "Confirmação de senha",
           ),
-          const SizedBox(height: 30),
-          Align(
-            child: SesoftElevatedButton(
-              onPressed: () {},
-              icon: const Icon(Icons.app_registration_outlined),
-              child: const Text("Registrar-se"),
-            ),
-          )
         ],
+      ),
+      bottomNavigationBar: SesoftBottomBarContainer(
+        child: Align(
+          alignment: Alignment.centerRight,
+          child: SesoftElevatedButton(
+            onPressed: () {},
+            icon: const Icon(Icons.app_registration_outlined),
+            child: const Text("Registrar-se"),
+          ),
+        ),
       ),
     );
   }

@@ -3,30 +3,32 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SesoftScaffold extends ConsumerWidget {
-  final String titleText;
+  final String? titleText;
   final Widget? body;
   final bool applyGradient;
+  final Widget? bottomNavigationBar;
 
   const SesoftScaffold({
     super.key,
-    required this.titleText,
+    this.titleText,
     this.body,
     this.applyGradient = false,
+    this.bottomNavigationBar,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(
-        systemOverlayStyle: Theme.of(context).brightness == Brightness.light ? SystemUiOverlayStyle.dark : SystemUiOverlayStyle.light,
-        backgroundColor: Colors.transparent,
-        shadowColor: Colors.transparent,
-        bottom: const PreferredSize(preferredSize: Size.fromHeight(0), child: Divider(height: 0)),
-        title: Text(
-          titleText,
-          style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
-        ),
-      ),
+      appBar: titleText != null
+          ? AppBar(
+              systemOverlayStyle: Theme.of(context).brightness == Brightness.light ? SystemUiOverlayStyle.dark : SystemUiOverlayStyle.light,
+              shadowColor: Colors.transparent,
+              bottom: const PreferredSize(preferredSize: Size.fromHeight(0), child: Divider(height: 0)),
+              title: Text(
+                titleText!,
+              ),
+            )
+          : null,
       body: Container(
         decoration: BoxDecoration(
           gradient: applyGradient
@@ -43,6 +45,7 @@ class SesoftScaffold extends ConsumerWidget {
         ),
         child: body,
       ),
+      bottomNavigationBar: bottomNavigationBar,
     );
   }
 }

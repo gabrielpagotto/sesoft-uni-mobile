@@ -23,6 +23,14 @@ class SigninController extends _$SigninController {
         password: "",
       );
 
+  void changeEmail(String value) {
+    state = state.copyWith(email: value);
+  }
+
+  void changePassword(String value) {
+    state = state.copyWith(password: value);
+  }
+
   Future<void> submit() async {
     state = state.copyWith(isSubmiting: true);
     try {

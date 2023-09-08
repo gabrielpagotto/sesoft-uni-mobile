@@ -20,6 +20,7 @@ class SesoftTextFormField extends ConsumerWidget {
   final TextEditingController? controller;
   final Widget? prefixIcon;
   final String? Function(String? value)? validator;
+  final void Function(String value)? onChange;
 
   const SesoftTextFormField({
     super.key,
@@ -30,6 +31,7 @@ class SesoftTextFormField extends ConsumerWidget {
     this.prefixIcon,
     this.hintText,
     this.validator,
+    this.onChange,
   });
 
   @override
@@ -48,6 +50,7 @@ class SesoftTextFormField extends ConsumerWidget {
             textInputAction: textInputAction,
             obscureText: obscureText,
             validator: validator,
+            onChanged: onChange,
             decoration: InputDecoration(
               prefixIcon: prefixIcon,
               hintText: hintText,

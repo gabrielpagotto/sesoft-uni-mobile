@@ -11,7 +11,22 @@ class SesoftLogo extends StatelessWidget {
       child: Container(
         height: 200,
         padding: const EdgeInsets.all(50),
-        child: Image.asset(ASSET_IMAGE.logoFasoft.uri),
+        child: ColorFiltered(
+          colorFilter: Theme.of(context).colorScheme.brightness == Brightness.dark
+              ? const ColorFilter.matrix(<double>[
+                  -1.0, 0.0, 0.0, 0.0, 255.0, //
+                  0.0, -1.0, 0.0, 0.0, 255.0, //
+                  0.0, 0.0, -1.0, 0.0, 255.0, //
+                  0.0, 0.0, 0.0, 1.0, 0.0, //
+                ])
+              : const ColorFilter.matrix(<double>[
+                  1.0, 0.0, 0.0, 0.0, 0.0, //
+                  0.0, 1.0, 0.0, 0.0, 0.0, //
+                  0.0, 0.0, 1.0, 0.0, 0.0, //
+                  0.0, 0.0, 0.0, 1.0, 0.0, //
+                ]),
+          child: Image.asset(ASSET_IMAGE.logoFasoft.uri),
+        ),
       ),
     );
   }
