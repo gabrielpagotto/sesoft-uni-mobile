@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sesoft_uni_mobile/src/services/auth_service.dart';
@@ -8,33 +9,42 @@ part 'signin_controller.g.dart';
 @freezed
 class SigninControllerState with _$SigninControllerState {
   const factory SigninControllerState({
+    required bool isSubmited,
     required bool isSubmiting,
-    required String email,
-    required String password,
+    required GlobalKey<FormState> formKey,
+    required TextEditingController emailTextController,
+    required TextEditingController passwordTextController,
   }) = _SigninControllerState;
+}
+
+extension SigninControllerStateExtension on SigninControllerState {
+  get autovalidateMode => isSubmited ? AutovalidateMode.onUserInteraction : AutovalidateMode.disabled;
 }
 
 @riverpod
 class SigninController extends _$SigninController {
   @override
-  SigninControllerState build() => const SigninControllerState(
+  SigninControllerState build() => SigninControllerState(
+        isSubmited: false,
         isSubmiting: false,
-        email: "",
-        password: "",
+        formKey: GlobalKey<FormState>(),
+        emailTextController: TextEditingController(),
+        passwordTextController: TextEditingController(),
       );
 
-  void changeEmail(String value) {
-    state = state.copyWith(email: value);
-  }
-
-  void changePassword(String value) {
-    state = state.copyWith(password: value);
-  }
-
   Future<void> submit() async {
-    state = state.copyWith(isSubmiting: true);
+    final isFormValid = state.formKey.currentState!.validate();
+    if (!isFormValid) {
+      state = state.copyWith(isSubmited: true);
+      return;
+    }
+    final email = state.emailTextController.text;
+    final password = state.passwordTextController.text;
     try {
-      await ref.read(authServiceProvider.notifier).signin(email: "gabriel.pagotto@cloud.com", password: "gabriel123");
+      state = state.copyWith(isSubmiting: true);
+      await ref.read(authServiceProvider.notifier).signin(email: email, password: password);
+    } catch (err) {
+      print(err);
     } finally {
       state = state.copyWith(isSubmiting: false);
     }

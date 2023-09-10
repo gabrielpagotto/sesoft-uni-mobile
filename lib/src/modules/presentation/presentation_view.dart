@@ -30,7 +30,7 @@ class PresentationView extends StatelessWidget {
               label: const Text("Registre-se"),
               icon: const Icon(Icons.app_registration_rounded),
             ),
-          )
+          ),
         ],
       ),
     );

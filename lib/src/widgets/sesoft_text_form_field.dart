@@ -1,18 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:sesoft_uni_mobile/src/helpers/extensions/stateful_value_notifier_observer.dart';
 
-part 'sesoft_text_form_field.g.dart';
-
-@riverpod
-class _ObscureText extends _$ObscureText {
-  @override
-  bool build() => true;
-
-  void toggle() => state = !state;
-}
-
-class SesoftTextFormField extends ConsumerWidget {
+class SesoftTextFormField extends StatefulWidget {
   final String labelText;
   final String? hintText;
   final TextInputType keyboardType;
@@ -35,31 +24,42 @@ class SesoftTextFormField extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final obscureText = ref.watch(_obscureTextProvider);
-    final toggleObscureText = ref.read(_obscureTextProvider.notifier).toggle;
+  State<SesoftTextFormField> createState() => _SesoftTextFormFieldState();
+}
 
+class _SesoftTextFormFieldState extends State<SesoftTextFormField> with StatefulValueNotifierObserver<SesoftTextFormField> {
+  late final obscureText = ValueNotifier(widget.keyboardType == TextInputType.visiblePassword);
+
+  @override
+  List<ValueNotifier> get notifiers => [obscureText];
+
+  void toggleObscureText() {
+    obscureText.value = !obscureText.value;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10, left: 10, right: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextFormField(
-            controller: controller,
-            keyboardType: keyboardType,
-            textInputAction: textInputAction,
-            obscureText: obscureText,
-            validator: validator,
-            onChanged: onChange,
+            controller: widget.controller,
+            keyboardType: widget.keyboardType,
+            textInputAction: widget.textInputAction,
+            obscureText: obscureText.value,
+            validator: widget.validator,
+            onChanged: widget.onChange,
             decoration: InputDecoration(
-              prefixIcon: prefixIcon,
-              hintText: hintText,
+              prefixIcon: widget.prefixIcon,
+              hintText: widget.hintText,
               alignLabelWithHint: false,
-              labelText: labelText,
-              suffixIcon: keyboardType == TextInputType.visiblePassword
+              labelText: widget.labelText,
+              suffixIcon: widget.keyboardType == TextInputType.visiblePassword
                   ? IconButton(
                       onPressed: toggleObscureText,
-                      icon: obscureText ? const Icon(Icons.visibility_off) : const Icon(Icons.visibility),
+                      icon: obscureText.value ? const Icon(Icons.visibility_off) : const Icon(Icons.visibility),
                     )
                   : null,
             ),
