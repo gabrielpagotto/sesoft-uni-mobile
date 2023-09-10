@@ -55,8 +55,19 @@ class AuthService extends _$AuthService {
         'email': email,
         'password': password,
       };
-      await client.post('/auth/signup', data: data);
-    } on DioException {}
+      final response = await client.post('/auth/signup', data: data);
+      print(response.data);
+    } on DioException catch (err) {
+      if (err.response?.statusCode == 400) {
+        if (err.response?.data['message'] == 'A user already uses this username') {
+          throw ServiceException('Este nome de usuário não está disponível');
+        }
+        if (err.response?.data['message'] == 'A user already uses this email') {
+          throw ServiceException('Este email já está sendo utilizado por outro usuário');
+        }
+      }
+      rethrow;
+    }
   }
 
   Future<void> signout() async {
