@@ -14,6 +14,7 @@ Dio sesoftClient<T>(SesoftClientRef ref) {
   );
   final client = Dio(baseOptions);
   if (authStatus == AuthStatus.authenticated) {
+    client.interceptors.add(_LogoutIfUnauthorized(authService));
     client.interceptors.add(_InsertBearerTokenInterceptor(authService));
   }
   return client;
@@ -42,5 +43,19 @@ class _InsertBearerTokenInterceptor extends Interceptor {
     final token = await authService.getToken();
     options.headers['Authorization'] = 'Bearer $token';
     super.onRequest(options, handler);
+  }
+}
+
+class _LogoutIfUnauthorized extends Interceptor {
+  final AuthService authService;
+
+  _LogoutIfUnauthorized(this.authService);
+
+  @override
+  Future<void> onResponse(Response response, ResponseInterceptorHandler handler) async {
+    if (response.statusCode == 401) {
+      authService.signout();
+    }
+    super.onResponse(response, handler);
   }
 }
