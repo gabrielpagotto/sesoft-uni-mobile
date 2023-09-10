@@ -34,7 +34,7 @@ class App extends ConsumerWidget {
     if ((currentIsAuth || currentRoutePath == AuthCheckView.ROUTE) && redirectToAuthenticated) {
       router.go(HomeView.ROUTE);
     } else if ((!currentIsAuth || currentRoutePath == AuthCheckView.ROUTE) && redirectToUnauthenticated) {
-      router.go(SigninView.ROUTE);
+      router.go(PresentationView.ROUTE);
     }
   }
 }
