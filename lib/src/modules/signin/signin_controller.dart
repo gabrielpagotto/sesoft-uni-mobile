@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:sesoft_uni_mobile/src/exceptions/service_exception.dart';
+import 'package:sesoft_uni_mobile/src/helpers/utils/snackbar.dart';
 import 'package:sesoft_uni_mobile/src/services/auth_service.dart';
 
 part 'signin_controller.freezed.dart';
@@ -43,8 +45,8 @@ class SigninController extends _$SigninController {
     try {
       state = state.copyWith(isSubmiting: true);
       await ref.read(authServiceProvider.notifier).signin(email: email, password: password);
-    } catch (err) {
-      print(err);
+    } on ServiceException catch (err) {
+      SesoftSnackbar.error(err.message);
     } finally {
       state = state.copyWith(isSubmiting: false);
     }
