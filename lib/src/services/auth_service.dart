@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sesoft_uni_mobile/src/clients/sesoft_client.dart';
@@ -16,21 +17,29 @@ enum AuthStatus {
 @freezed
 class AuthServiceState with _$AuthServiceState {
   const factory AuthServiceState({
-    required AuthStatus authStatus,
+    @Default(AuthStatus.unknown) AuthStatus authStatus,
+    @Default(FlutterSecureStorage()) FlutterSecureStorage storage,
   }) = _AuthServiceData;
 }
 
 @Riverpod(keepAlive: true)
 class AuthService extends _$AuthService {
   @override
-  AuthServiceState build() => const AuthServiceState(authStatus: AuthStatus.unknown);
+  AuthServiceState build() => const AuthServiceState();
+
+  static const _tokenKey = 'AuthService.AccessToken';
+
+  Future<void> _realizeLoginWithAccessToken(String token) async {
+    await state.storage.write(key: _tokenKey, value: token);
+    state = state.copyWith(authStatus: AuthStatus.authenticated);
+  }
 
   Future<void> signin({required String email, required String password}) async {
     final client = ref.read(sesoftClientProvider);
     try {
       final data = {'email': email, 'password': password};
-      await client.post('/auth/signin', data: data);
-      // state = state.copyWith(authStatus: AuthStatus.authenticated);
+      final response = await client.post('/auth/signin', data: data);
+      _realizeLoginWithAccessToken(response.data['token']);
     } on DioException catch (err) {
       if (err.response?.statusCode == 401) {
         if (err.response!.data['message'] == 'Username or password is invalid.') {
@@ -56,7 +65,7 @@ class AuthService extends _$AuthService {
         'password': password,
       };
       final response = await client.post('/auth/signup', data: data);
-      print(response.data);
+      _realizeLoginWithAccessToken(response.data['token']);
     } on DioException catch (err) {
       if (err.response?.statusCode == 400) {
         if (err.response?.data['message'] == 'A user already uses this username') {
