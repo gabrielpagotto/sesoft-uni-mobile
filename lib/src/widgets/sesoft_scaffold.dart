@@ -7,6 +7,7 @@ class SesoftScaffold extends ConsumerWidget {
   final Widget? body;
   final bool applyGradient;
   final Widget? bottomNavigationBar;
+  final Widget? drawer;
 
   const SesoftScaffold({
     super.key,
@@ -14,6 +15,7 @@ class SesoftScaffold extends ConsumerWidget {
     this.body,
     this.applyGradient = false,
     this.bottomNavigationBar,
+    this.drawer,
   });
 
   @override
@@ -46,6 +48,7 @@ class SesoftScaffold extends ConsumerWidget {
         child: body,
       ),
       bottomNavigationBar: bottomNavigationBar,
+      drawer: drawer,
     );
   }
 }

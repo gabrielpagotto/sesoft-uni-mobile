@@ -93,6 +93,7 @@ class AuthService extends _$AuthService {
   }
 
   Future<void> signout() async {
+    await state.storage.delete(key: _tokenKey);
     state = state.copyWith(authStatus: AuthStatus.unauthenticated);
   }
 }
