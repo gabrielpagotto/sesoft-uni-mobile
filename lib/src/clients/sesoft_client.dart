@@ -7,13 +7,14 @@ part 'sesoft_client.g.dart';
 @Riverpod(dependencies: [AuthService])
 Dio sesoftClient<T>(SesoftClientRef ref) {
   final authStatus = ref.watch(authServiceProvider.select((value) => value.authStatus));
+  final authService = ref.read(authServiceProvider.notifier);
   final baseOptions = BaseOptions(
     baseUrl: 'https://sesoft-uni-backend-development.up.railway.app',
     validateStatus: (status) => _validateStatus(status, authStatus),
   );
   final client = Dio(baseOptions);
   if (authStatus == AuthStatus.authenticated) {
-    client.interceptors.add(_InsertBearerTokenInterceptor());
+    client.interceptors.add(_InsertBearerTokenInterceptor(authService));
   }
   return client;
 }
@@ -32,9 +33,14 @@ bool _validateStatus(int? status, AuthStatus authStatus) {
 }
 
 class _InsertBearerTokenInterceptor extends Interceptor {
+  final AuthService authService;
+
+  _InsertBearerTokenInterceptor(this.authService);
+
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    // TODO: implement onRequest
+  Future<void> onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+    final token = await authService.getToken();
+    options.headers['Authorization'] = 'Bearer $token';
     super.onRequest(options, handler);
   }
 }

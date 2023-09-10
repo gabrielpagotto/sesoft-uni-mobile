@@ -34,8 +34,12 @@ class AuthService extends _$AuthService {
     state = state.copyWith(authStatus: AuthStatus.authenticated);
   }
 
+  Future<String?> getToken() async {
+    return state.storage.read(key: _tokenKey);
+  }
+
   Future<void> verifyAuth() async {
-    final token = await state.storage.read(key: _tokenKey);
+    final token = await getToken();
     if (token == null) {
       state = state.copyWith(authStatus: AuthStatus.unauthenticated);
     } else {
