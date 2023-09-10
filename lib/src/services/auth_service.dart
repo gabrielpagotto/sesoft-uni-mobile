@@ -27,19 +27,37 @@ class AuthService extends _$AuthService {
 
   Future<void> signin({required String email, required String password}) async {
     final client = ref.read(sesoftClientProvider);
-    final data = {'email': email, 'password': password};
     try {
+      final data = {'email': email, 'password': password};
       await client.post('/auth/signin', data: data);
       // state = state.copyWith(authStatus: AuthStatus.authenticated);
     } on DioException catch (err) {
-      if (err.response!.data['message'] == 'Username or password is invalid.') {
-        throw ServiceException('Usuário ou senha inválidos');
+      if (err.response?.statusCode == 401) {
+        if (err.response!.data['message'] == 'Username or password is invalid.') {
+          throw ServiceException('Usuário ou senha inválidos');
+        }
       }
       rethrow;
     }
   }
 
-  Future<void> signup() async {}
+  Future<void> signup({
+    required String displayName,
+    required String username,
+    required String email,
+    required String password,
+  }) async {
+    final client = ref.read(sesoftClientProvider);
+    try {
+      final data = {
+        'displayName': displayName,
+        'username': username,
+        'email': email,
+        'password': password,
+      };
+      await client.post('/auth/signup', data: data);
+    } on DioException {}
+  }
 
   Future<void> signout() async {
     state = state.copyWith(authStatus: AuthStatus.unauthenticated);
