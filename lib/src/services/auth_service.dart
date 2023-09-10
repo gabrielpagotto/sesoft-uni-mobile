@@ -34,6 +34,15 @@ class AuthService extends _$AuthService {
     state = state.copyWith(authStatus: AuthStatus.authenticated);
   }
 
+  Future<void> verifyAuth() async {
+    final token = await state.storage.read(key: _tokenKey);
+    if (token == null) {
+      state = state.copyWith(authStatus: AuthStatus.unauthenticated);
+    } else {
+      _realizeLoginWithAccessToken(token);
+    }
+  }
+
   Future<void> signin({required String email, required String password}) async {
     final client = ref.read(sesoftClientProvider);
     try {
