@@ -12,4 +12,6 @@ class TimelineService extends _$TimelineService {
     final response = await client.get('/timeline');
     return response.data['result'].map<Post>((e) => Post.fromJson(e)).toList();
   }
+
+  Future<void> loadMore() async {}
 }

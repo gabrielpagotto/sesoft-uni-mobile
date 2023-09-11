@@ -4,7 +4,7 @@ import 'package:sesoft_uni_mobile/src/themes/base.dart';
 
 ThemeData darkTheme() => FlexThemeData.dark(
       useMaterial3: true,
-      scheme: FlexScheme.orangeM3,
+      scheme: FlexScheme.blueM3,
       darkIsTrueBlack: true,
       swapLegacyOnMaterial3: true,
     ).copyWith(

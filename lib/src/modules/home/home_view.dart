@@ -5,6 +5,8 @@ import 'package:sesoft_uni_mobile/src/helpers/extensions/build_context.dart';
 import 'package:sesoft_uni_mobile/src/services/auth_service.dart';
 import 'package:sesoft_uni_mobile/src/services/timeline_service.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_elevated_button.dart';
+import 'package:sesoft_uni_mobile/src/widgets/sesoft_loader.dart';
+import 'package:sesoft_uni_mobile/src/widgets/sesoft_post.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_scaffold.dart';
 
 class HomeView extends ConsumerStatefulWidget {
@@ -52,100 +54,16 @@ class _HomeViewState extends ConsumerState<HomeView> {
         data: (posts) {
           return ListView.separated(
             itemCount: posts.length,
-            itemBuilder: (context, index) {
-              final post = posts[index];
-              return Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Icon(Icons.person, size: 35),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              post.user!.profile!.displayName,
-                              style: context.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(width: 5),
-                            Text(
-                              "@${post.user!.username}",
-                              style: context.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w300,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Text(
-                          posts[index].content,
-                          style: context.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w500,
-                          ),
-                          maxLines: 5,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                IconButton(
-                                  onPressed: () {},
-                                  icon: const Icon(Icons.mode_comment),
-                                  iconSize: 15,
-                                  padding: EdgeInsets.zero,
-                                ),
-                                Text(post.likesCount.toString()),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                IconButton(
-                                  onPressed: () {},
-                                  icon: const Icon(Icons.favorite),
-                                  iconSize: 15,
-                                  padding: EdgeInsets.zero,
-                                ),
-                                Text(post.likesCount.toString()),
-                              ],
-                            ),
-                            IconButton(
-                              onPressed: () {},
-                              icon: const Icon(Icons.ios_share),
-                              iconSize: 15,
-                              padding: EdgeInsets.zero,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              );
-            },
-            separatorBuilder: (context, index) => const Divider(),
+            itemBuilder: (context, index) => SesoftPost(post: posts[index]),
+            separatorBuilder: (context, index) => const Divider(
+              height: 0,
+            ),
           );
         },
         error: (err, trace) {
           return const Align(child: Text('Ocorreu um erro'));
         },
-        loading: () => Align(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const CircularProgressIndicator.adaptive(),
-              const SizedBox(height: 10),
-              Text(
-                'CARREGANDO...',
-                style: context.textTheme.labelSmall,
-              ),
-            ],
-          ),
-        ),
+        loading: () => const SesoftLoader(),
       ),
       drawer: Drawer(
         child: Column(
@@ -164,7 +82,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     Text(
                       'gabrielnpagotto',
                       style: context.textTheme.titleSmall?.copyWith(
-                        color: context.theme.colorScheme.inversePrimary,
+                        color: context.theme.colorScheme.outline,
                       ),
                     ),
                     Row(
@@ -175,7 +93,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                             Text(
                               '177',
                               style: context.textTheme.titleMedium?.copyWith(
-                                color: context.theme.colorScheme.inversePrimary,
+                                color: context.theme.colorScheme.outline,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -183,7 +101,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                             Text(
                               'Seguindo',
                               style: context.textTheme.titleSmall?.copyWith(
-                                color: context.theme.colorScheme.inversePrimary,
+                                color: context.theme.colorScheme.outline,
                               ),
                             ),
                           ],
@@ -194,7 +112,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                             Text(
                               '34',
                               style: context.textTheme.titleMedium?.copyWith(
-                                color: context.theme.colorScheme.inversePrimary,
+                                color: context.theme.colorScheme.outline,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -202,7 +120,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                             Text(
                               'Seguidores',
                               style: context.textTheme.titleSmall?.copyWith(
-                                color: context.theme.colorScheme.inversePrimary,
+                                color: context.theme.colorScheme.outline,
                               ),
                             ),
                           ],
