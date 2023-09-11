@@ -17,7 +17,15 @@ class SesoftPost extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(Icons.person, size: 40),
+              Container(
+                margin: const EdgeInsets.only(left: 5),
+                padding: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: context.theme.dividerColor),
+                ),
+                child: const Icon(Icons.person, size: 35),
+              ),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
