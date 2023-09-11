@@ -7,11 +7,11 @@ part 'timeline_service.g.dart';
 @riverpod
 class TimelineService extends _$TimelineService {
   @override
-  Future<List<Post>> build() async {
+  List build() => [];
+
+  Future<List<Post>> fetch() async {
     final client = ref.read(sesoftClientProvider);
     final response = await client.get('/timeline');
     return response.data['result'].map<Post>((e) => Post.fromJson(e)).toList();
   }
-
-  Future<void> loadMore() async {}
 }

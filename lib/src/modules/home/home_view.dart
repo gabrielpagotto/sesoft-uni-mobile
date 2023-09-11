@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sesoft_uni_mobile/src/helpers/extensions/build_context.dart';
+import 'package:sesoft_uni_mobile/src/modules/home/home_controller.dart';
+import 'package:sesoft_uni_mobile/src/modules/posts/posts_view.dart';
 import 'package:sesoft_uni_mobile/src/services/auth_service.dart';
-import 'package:sesoft_uni_mobile/src/services/timeline_service.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_elevated_button.dart';
-import 'package:sesoft_uni_mobile/src/widgets/sesoft_loader.dart';
-import 'package:sesoft_uni_mobile/src/widgets/sesoft_post.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_scaffold.dart';
 
 class HomeView extends ConsumerStatefulWidget {
@@ -20,6 +19,8 @@ class HomeView extends ConsumerStatefulWidget {
 }
 
 class _HomeViewState extends ConsumerState<HomeView> {
+  HomeController get controller => ref.read(homeControllerProvider.notifier);
+
   Future<void> signout() async {
     context.pop();
     final dialog = AlertDialog(
@@ -47,24 +48,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    final timeline = ref.watch(timelineServiceProvider);
     return SesoftScaffold(
       titleText: 'Sesoft Uni',
-      body: timeline.when(
-        data: (posts) {
-          return ListView.separated(
-            itemCount: posts.length,
-            itemBuilder: (context, index) => SesoftPost(post: posts[index]),
-            separatorBuilder: (context, index) => const Divider(
-              height: 0,
-            ),
-          );
-        },
-        error: (err, trace) {
-          return const Align(child: Text('Ocorreu um erro'));
-        },
-        loading: () => const SesoftLoader(),
-      ),
+      body: ref.watch(homeControllerProvider.select((value) => value.currentTabIndex)) == 0 ? const PostsView() : Container(),
       drawer: Drawer(
         child: Column(
           children: [
@@ -148,16 +134,20 @@ class _HomeViewState extends ConsumerState<HomeView> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        elevation: 4,
-        enableFeedback: true,
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.house_rounded), label: 'Página inicial'),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Buscar'),
-          BottomNavigationBarItem(icon: Icon(Icons.notification_add), label: 'Notificações'),
-        ],
-      ),
+      bottomNavigationBar: Consumer(builder: (context, ref, _) {
+        return BottomNavigationBar(
+          elevation: 4,
+          enableFeedback: true,
+          type: BottomNavigationBarType.fixed,
+          onTap: controller.changeTabIndex,
+          currentIndex: ref.watch(homeControllerProvider.select((value) => value.currentTabIndex)),
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.house_rounded), label: 'Página inicial'),
+            BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Buscar'),
+            BottomNavigationBarItem(icon: Icon(Icons.notification_add), label: 'Notificações'),
+          ],
+        );
+      }),
     );
   }
 }
