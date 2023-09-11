@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SesoftScaffold extends ConsumerWidget {
@@ -8,6 +7,7 @@ class SesoftScaffold extends ConsumerWidget {
   final bool applyGradient;
   final Widget? bottomNavigationBar;
   final Widget? drawer;
+  final Widget? floatingActionButton;
 
   const SesoftScaffold({
     super.key,
@@ -16,6 +16,7 @@ class SesoftScaffold extends ConsumerWidget {
     this.applyGradient = false,
     this.bottomNavigationBar,
     this.drawer,
+    this.floatingActionButton,
   });
 
   @override
@@ -23,12 +24,8 @@ class SesoftScaffold extends ConsumerWidget {
     return Scaffold(
       appBar: titleText != null
           ? AppBar(
-              systemOverlayStyle: Theme.of(context).brightness == Brightness.light ? SystemUiOverlayStyle.dark : SystemUiOverlayStyle.light,
-              shadowColor: Colors.transparent,
               bottom: const PreferredSize(preferredSize: Size.fromHeight(0), child: Divider(height: 0)),
-              title: Text(
-                titleText!,
-              ),
+              title: Text(titleText!),
             )
           : null,
       body: Container(
@@ -49,6 +46,7 @@ class SesoftScaffold extends ConsumerWidget {
       ),
       bottomNavigationBar: bottomNavigationBar,
       drawer: drawer,
+      floatingActionButton: floatingActionButton,
     );
   }
 }

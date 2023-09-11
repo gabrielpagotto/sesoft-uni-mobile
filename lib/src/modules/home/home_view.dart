@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sesoft_uni_mobile/src/helpers/extensions/build_context.dart';
 import 'package:sesoft_uni_mobile/src/modules/home/home_controller.dart';
+import 'package:sesoft_uni_mobile/src/modules/new_post/new_post_view.dart';
 import 'package:sesoft_uni_mobile/src/modules/posts/posts_view.dart';
 import 'package:sesoft_uni_mobile/src/services/auth_service.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_elevated_button.dart';
@@ -134,6 +135,12 @@ class _HomeViewState extends ConsumerState<HomeView> {
           ],
         ),
       ),
+      floatingActionButton: ref.watch(homeControllerProvider.select((value) => value.currentTabIndex == 0))
+          ? FloatingActionButton(
+              onPressed: () => context.push(NewPostView.ROUTE),
+              child: const Icon(Icons.add),
+            )
+          : null,
       bottomNavigationBar: Consumer(builder: (context, ref, _) {
         return BottomNavigationBar(
           elevation: 4,
