@@ -8,23 +8,16 @@ class SesoftScaffold extends ConsumerWidget {
   final Widget? bottomNavigationBar;
   final Widget? drawer;
   final Widget? floatingActionButton;
+  final PreferredSizeWidget? appBarBottom;
 
-  const SesoftScaffold({
-    super.key,
-    this.titleText,
-    this.body,
-    this.applyGradient = false,
-    this.bottomNavigationBar,
-    this.drawer,
-    this.floatingActionButton,
-  });
+  const SesoftScaffold({super.key, this.titleText, this.body, this.applyGradient = false, this.bottomNavigationBar, this.drawer, this.floatingActionButton, this.appBarBottom});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: titleText != null
           ? AppBar(
-              bottom: const PreferredSize(preferredSize: Size.fromHeight(0), child: Divider(height: 0)),
+              bottom: appBarBottom,
               title: Text(titleText!),
             )
           : null,

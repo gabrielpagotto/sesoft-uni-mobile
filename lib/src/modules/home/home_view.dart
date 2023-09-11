@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sesoft_uni_mobile/src/helpers/extensions/build_context.dart';
+import 'package:sesoft_uni_mobile/src/models/profile.dart';
+import 'package:sesoft_uni_mobile/src/models/user.dart';
 import 'package:sesoft_uni_mobile/src/modules/home/home_controller.dart';
 import 'package:sesoft_uni_mobile/src/modules/new_post/new_post_view.dart';
 import 'package:sesoft_uni_mobile/src/modules/posts/posts_view.dart';
@@ -121,9 +123,21 @@ class _HomeViewState extends ConsumerState<HomeView> {
             Expanded(
                 child: ListView(
               children: [
-                const ListTile(
-                  trailing: Icon(Icons.person),
-                  title: Text('Perfil'),
+                ListTile(
+                  trailing: const Icon(Icons.person),
+                  title: const Text('Perfil'),
+                  onTap: () {
+                    context.pop();
+                    context.push(
+                      '/profile',
+                      extra: const User(
+                        id: 'id',
+                        username: 'gabrielnpagotto',
+                        email: 'gabriel.pagotto@icloud.com',
+                        profile: Profile(id: 'id', displayName: 'Gabriel Pagotto'),
+                      ),
+                    );
+                  },
                 ),
                 ListTile(
                   trailing: const Icon(Icons.logout),
