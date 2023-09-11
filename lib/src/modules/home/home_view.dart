@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sesoft_uni_mobile/src/helpers/extensions/build_context.dart';
 import 'package:sesoft_uni_mobile/src/services/auth_service.dart';
+import 'package:sesoft_uni_mobile/src/services/timeline_service.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_elevated_button.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_scaffold.dart';
 
@@ -44,11 +45,107 @@ class _HomeViewState extends ConsumerState<HomeView> {
 
   @override
   Widget build(BuildContext context) {
+    final timeline = ref.watch(timelineServiceProvider);
     return SesoftScaffold(
       titleText: 'Sesoft Uni',
-      body: ListView.builder(
-        itemCount: 100,
-        itemBuilder: (context, index) => ListTile(title: Text(index.toString())),
+      body: timeline.when(
+        data: (posts) {
+          return ListView.separated(
+            itemCount: posts.length,
+            itemBuilder: (context, index) {
+              final post = posts[index];
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(Icons.person, size: 35),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              post.user!.profile!.displayName,
+                              style: context.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(width: 5),
+                            Text(
+                              "@${post.user!.username}",
+                              style: context.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w300,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          posts[index].content,
+                          style: context.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
+                          maxLines: 5,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                IconButton(
+                                  onPressed: () {},
+                                  icon: const Icon(Icons.mode_comment),
+                                  iconSize: 15,
+                                  padding: EdgeInsets.zero,
+                                ),
+                                Text(post.likesCount.toString()),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                IconButton(
+                                  onPressed: () {},
+                                  icon: const Icon(Icons.favorite),
+                                  iconSize: 15,
+                                  padding: EdgeInsets.zero,
+                                ),
+                                Text(post.likesCount.toString()),
+                              ],
+                            ),
+                            IconButton(
+                              onPressed: () {},
+                              icon: const Icon(Icons.ios_share),
+                              iconSize: 15,
+                              padding: EdgeInsets.zero,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
+            separatorBuilder: (context, index) => const Divider(),
+          );
+        },
+        error: (err, trace) {
+          return const Align(child: Text('Ocorreu um erro'));
+        },
+        loading: () => Align(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator.adaptive(),
+              const SizedBox(height: 10),
+              Text(
+                'CARREGANDO...',
+                style: context.textTheme.labelSmall,
+              ),
+            ],
+          ),
+        ),
       ),
       drawer: Drawer(
         child: Column(
