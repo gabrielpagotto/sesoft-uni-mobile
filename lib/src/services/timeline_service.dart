@@ -4,12 +4,10 @@ import 'package:sesoft_uni_mobile/src/models/post.dart';
 
 part 'timeline_service.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 class TimelineService extends _$TimelineService {
   @override
-  List build() => [];
-
-  Future<List<Post>> fetch() async {
+  Future<List<Post>> build() async {
     final client = ref.read(sesoftClientProvider);
     final response = await client.get('/timeline');
     return response.data['result'].map<Post>((e) => Post.fromJson(e)).toList();
