@@ -1,194 +1,203 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sesoft_uni_mobile/src/helpers/extensions/build_context.dart';
+import 'package:sesoft_uni_mobile/src/helpers/providers/current_user.dart';
 import 'package:sesoft_uni_mobile/src/models/user.dart';
+import 'package:sesoft_uni_mobile/src/modules/profile/profile_controller.dart';
+import 'package:sesoft_uni_mobile/src/services/user_service.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_profile_icon.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
-class ProfileView extends StatefulWidget {
-  final User user;
+part 'profile_view.g.dart';
 
-  const ProfileView({super.key, required this.user});
+@riverpod
+Future<User> _getUser(_GetUserRef ref, String? userId) async {
+  if (userId == null) {
+    return ref.read(currentUserProvider.future);
+  } else {
+    return ref.read(userServiceProvider.notifier).find(userId);
+  }
+}
+
+class ProfileView extends ConsumerWidget {
+  final String? userId;
+
+  const ProfileView({super.key, required this.userId});
 
   // ignore: constant_identifier_names
   static const ROUTE = '/profile';
 
   @override
-  State<ProfileView> createState() => _ProfileViewState();
-}
-
-class _ProfileViewState extends State<ProfileView> {
-  static const _infoContainerMaxHeight = 78.0;
-  final _infoContainerHeightNotifier = ValueNotifier(_infoContainerMaxHeight);
-  final scrollController = ScrollController();
-
-  void _listenScrollChanges() {
-    final offset = scrollController.offset - 100;
-    if (offset < 0) {
-      _infoContainerHeightNotifier.value = _infoContainerMaxHeight;
-    } else if (offset / 1.5 < (_infoContainerMaxHeight)) {
-      _infoContainerHeightNotifier.value = _infoContainerMaxHeight - (offset / 1.5);
-    } else {
-      _infoContainerHeightNotifier.value = 0;
-    }
-  }
-
-  @override
-  void initState() {
-    scrollController.addListener(_listenScrollChanges);
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    scrollController.removeListener(_listenScrollChanges);
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userAsyncValue = ref.watch(_getUserProvider(userId));
     return DefaultTabController(
       length: 3,
       initialIndex: 0,
       child: Scaffold(
-        body: CustomScrollView(
-          controller: scrollController,
-          slivers: [
-            SliverAppBar(
-              bottom: const PreferredSize(
-                preferredSize: Size.fromHeight(50),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TabBar(tabs: [
-                      Tab(text: 'Postagens'),
-                      Tab(text: 'Postagens'),
-                      Tab(text: 'Curtidas'),
-                    ]),
-                    Divider(height: 0),
-                  ],
-                ),
-              ),
-              forceElevated: true,
-              expandedHeight: 325,
-              pinned: true,
-              flexibleSpace: FlexibleSpaceBar(
-                stretchModes: const [StretchMode.fadeTitle],
-                centerTitle: false,
-                title: Padding(
-                  padding: const EdgeInsets.only(bottom: 40),
+        body: Consumer(builder: (context, ref, child) {
+          return CustomScrollView(
+            controller: ref.watch(profileControllerProvider.select((value) => value.scrollController)),
+            slivers: [
+              SliverAppBar(
+                bottom: const PreferredSize(
+                  preferredSize: Size.fromHeight(50),
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Gabriel Pagotto',
-                                  style: context.textTheme.titleMedium,
-                                ),
-                                Text(
-                                  '@gabrielnpagotto',
-                                  style: context.textTheme.bodySmall?.copyWith(
-                                    color: context.theme.colorScheme.outline,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 20),
-                            child: SesoftProfileIcon(user: widget.user, size: 25),
-                          ),
-                        ],
-                      ),
-                      ValueListenableBuilder(
-                          valueListenable: _infoContainerHeightNotifier,
-                          builder: (context, value, child) {
-                            return Container(
-                              padding: const EdgeInsets.only(top: 10),
-                              height: value,
-                              width: double.infinity,
-                              clipBehavior: Clip.antiAlias,
-                              decoration: const BoxDecoration(),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      'Aqui teoricamente seria onde a pessoa irá colocar alguma informação que ela ache necessário, no caso seria sua bio.',
-                                      maxLines: 3,
-                                      style: context.textTheme.bodySmall?.copyWith(
-                                        color: context.theme.colorScheme.outline,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 9,
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          '177',
-                                          style: context.textTheme.bodySmall?.copyWith(
-                                            color: context.theme.colorScheme.outline,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 9,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 2.5),
-                                        Text(
-                                          'Seguindo',
-                                          style: context.textTheme.labelSmall?.copyWith(
-                                            color: context.theme.colorScheme.outline,
-                                            fontSize: 9,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 10),
-                                        Text(
-                                          '33',
-                                          style: context.textTheme.labelSmall?.copyWith(
-                                            color: context.theme.colorScheme.outline,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 9,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 2.5),
-                                        Text(
-                                          'Seguidores',
-                                          style: context.textTheme.labelSmall?.copyWith(
-                                            color: context.theme.colorScheme.outline,
-                                            fontSize: 9,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }),
+                      TabBar(tabs: [
+                        Tab(text: 'Postagens'),
+                        Tab(text: 'Postagens'),
+                        Tab(text: 'Curtidas'),
+                      ]),
+                      Divider(height: 0),
                     ],
                   ),
                 ),
-                collapseMode: CollapseMode.parallax,
+                forceElevated: true,
+                expandedHeight: 325,
+                pinned: true,
+                flexibleSpace: FlexibleSpaceBar(
+                  stretchModes: const [StretchMode.fadeTitle],
+                  centerTitle: false,
+                  title: Padding(
+                    padding: const EdgeInsets.only(bottom: 40),
+                    child: userAsyncValue.when(
+                      data: (user) => _ProfileHeaderInfos(user),
+                      error: (err, stack) => const Text("Ocorreu um erro ao buscar"),
+                      loading: () => const Skeletonizer(child: _ProfileHeaderInfos(null)),
+                    ),
+                  ),
+                  collapseMode: CollapseMode.parallax,
+                ),
               ),
-              // floating: false,
-              // snap: true,
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) => ListTile(title: Text('Item #$index')),
+                  childCount: 1000,
+                ),
+              ),
+            ],
+          );
+        }),
+      ),
+    );
+  }
+}
+
+class _ProfileHeaderInfos extends StatelessWidget {
+  const _ProfileHeaderInfos(this.user);
+
+  final User? user;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    user?.profile?.displayName ?? 'unknown display',
+                    style: context.textTheme.titleMedium,
+                  ),
+                  Text(
+                    user?.username == null ? 'unknown username' : '@${user!.username}',
+                    style: context.textTheme.bodySmall?.copyWith(
+                      color: context.theme.colorScheme.outline,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) => ListTile(title: Text('Item #$index')),
-                // Builds 1000 ListTiles
-                childCount: 1000,
+            Padding(
+              padding: const EdgeInsets.only(right: 20),
+              child: SesoftProfileIcon(
+                user: user ?? const User(id: "", username: "", email: ""),
+                callProfileOnClick: false,
+                size: 25,
               ),
             ),
           ],
         ),
-      ),
+        Consumer(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  user?.profile?.bio ?? 'Nada a informar na bio',
+                  maxLines: 3,
+                  style: context.textTheme.bodySmall?.copyWith(
+                    color: context.theme.colorScheme.outline,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 9,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    _ProfileHeaderInfoFollow(count: user?.followingsCount ?? 0, label: 'Seguindo'),
+                    const SizedBox(width: 10),
+                    _ProfileHeaderInfoFollow(count: user?.followersCount ?? 0, label: 'Seguidores'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          builder: (context, ref, child) {
+            return Container(
+              padding: const EdgeInsets.only(top: 10),
+              height: ref.watch(profileControllerProvider.select((value) => value.infoContainerHeight)),
+              width: double.infinity,
+              clipBehavior: Clip.antiAlias,
+              decoration: const BoxDecoration(),
+              child: child,
+            );
+          },
+        )
+      ],
+    );
+  }
+}
+
+class _ProfileHeaderInfoFollow extends StatelessWidget {
+  const _ProfileHeaderInfoFollow({
+    required this.count,
+    required this.label,
+  });
+
+  final int count;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Text(
+          count.toString(),
+          style: context.textTheme.bodySmall?.copyWith(
+            color: context.theme.colorScheme.outline,
+            fontWeight: FontWeight.bold,
+            fontSize: 9,
+          ),
+        ),
+        const SizedBox(width: 2.5),
+        Text(
+          label,
+          style: context.textTheme.labelSmall?.copyWith(
+            color: context.theme.colorScheme.outline,
+            fontSize: 9,
+          ),
+        ),
+      ],
     );
   }
 }

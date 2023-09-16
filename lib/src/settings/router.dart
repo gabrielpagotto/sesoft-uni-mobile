@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sesoft_uni_mobile/src/models/user.dart';
 import 'package:sesoft_uni_mobile/src/modules/auth_check/auth_check_view.dart';
 import 'package:sesoft_uni_mobile/src/modules/home/home_view.dart';
 import 'package:sesoft_uni_mobile/src/modules/new_post/new_post_view.dart';
@@ -20,7 +19,7 @@ final router = GoRouter(
     GoRoute(path: SignupView.ROUTE, builder: (context, state) => const SignupView()),
     GoRoute(path: HomeView.ROUTE, builder: (context, state) => const HomeView()),
     GoRoute(path: NewPostView.ROUTE, builder: (context, state) => const NewPostView()),
-    GoRoute(path: ProfileView.ROUTE, builder: (context, state) => ProfileView(user: state.extra as User)),
+    GoRoute(path: ProfileView.ROUTE, builder: (context, state) => ProfileView(userId: state.extra as String?)),
   ],
   navigatorKey: navigatorKey,
 );

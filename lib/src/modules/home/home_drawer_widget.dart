@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sesoft_uni_mobile/src/helpers/extensions/build_context.dart';
 import 'package:sesoft_uni_mobile/src/helpers/providers/current_user.dart';
-import 'package:sesoft_uni_mobile/src/models/profile.dart';
 import 'package:sesoft_uni_mobile/src/models/user.dart';
 import 'package:sesoft_uni_mobile/src/services/auth_service.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_elevated_button.dart';
@@ -51,8 +50,9 @@ class HomeDrawerWidget extends ConsumerWidget {
                 return currentUserAsyncValue.when(
                   data: (currentUser) => _HomeDrawerHeader(currentUser),
                   error: ((error, stackTrace) => Container()),
-                  loading: () => const Skeletonizer(
-                    child: _HomeDrawerHeader(null),
+                  loading: () => Skeletonizer(
+                    textBoneBorderRadius: TextBoneBorderRadius.fromHeightFactor(34),
+                    child: const _HomeDrawerHeader(null),
                   ),
                 );
               }),
@@ -66,17 +66,7 @@ class HomeDrawerWidget extends ConsumerWidget {
                 title: const Text('Perfil'),
                 onTap: () {
                   context.pop();
-                  context.push(
-                    '/profile',
-                    extra: const User(
-                      id: 'id',
-                      username: 'gabrielnpagotto',
-                      email: 'gabriel.pagotto@icloud.com',
-                      profile: Profile(id: 'id', displayName: 'Gabriel Pagotto'),
-                      followersCount: 0,
-                      followingsCount: 0,
-                    ),
-                  );
+                  context.push('/profile');
                 },
               ),
               ListTile(
