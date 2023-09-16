@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:sesoft_uni_mobile/src/helpers/extensions/build_context.dart';
 import 'package:sesoft_uni_mobile/src/helpers/providers/current_user.dart';
 import 'package:sesoft_uni_mobile/src/models/user.dart';
+import 'package:sesoft_uni_mobile/src/modules/profile/profile_view.dart';
+import 'package:sesoft_uni_mobile/src/modules/settings/settings_view.dart';
 import 'package:sesoft_uni_mobile/src/services/auth_service.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_elevated_button.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_profile_icon.dart';
@@ -12,7 +14,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 class HomeDrawerWidget extends ConsumerWidget {
   const HomeDrawerWidget({super.key});
 
-  Future<void> signout(BuildContext context, WidgetRef ref) async {
+  Future<void> _signout(BuildContext context, WidgetRef ref) async {
     context.pop();
     final dialog = AlertDialog(
       title: const Text('Deslogar-se?'),
@@ -35,6 +37,16 @@ class HomeDrawerWidget extends ConsumerWidget {
     if (result != null && result) {
       ref.read(authServiceProvider.notifier).signout();
     }
+  }
+
+  void _toProfile(BuildContext context) {
+    context.pop();
+    context.push(ProfileView.ROUTE);
+  }
+
+  void _toSettings(BuildContext context) {
+    context.pop();
+    context.push(SettingsView.ROUTE);
   }
 
   @override
@@ -63,15 +75,17 @@ class HomeDrawerWidget extends ConsumerWidget {
               ListTile(
                 trailing: const Icon(Icons.person),
                 title: const Text('Perfil'),
-                onTap: () {
-                  context.pop();
-                  context.push('/profile');
-                },
+                onTap: () => _toProfile(context),
+              ),
+              ListTile(
+                trailing: const Icon(Icons.settings),
+                title: const Text('Configurações'),
+                onTap: () => _toSettings(context),
               ),
               ListTile(
                 trailing: const Icon(Icons.logout),
                 title: const Text('Sair'),
-                onTap: () => signout(context, ref),
+                onTap: () => _signout(context, ref),
               )
             ],
           )),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sesoft_uni_mobile/src/helpers/providers/app_settings.dart';
 import 'package:sesoft_uni_mobile/src/modules/auth_check/auth_check_view.dart';
 import 'package:sesoft_uni_mobile/src/modules/home/home_view.dart';
 import 'package:sesoft_uni_mobile/src/modules/presentation/presentation_view.dart';
@@ -21,7 +22,7 @@ class App extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       theme: lightTheme(),
       darkTheme: darkTheme(),
-      themeMode: ThemeMode.dark,
+      themeMode: ref.watch(appSettingsProvider.select((value) => value.themeMode)),
     );
   }
 
