@@ -9,8 +9,8 @@ extension BuildContextExtension on BuildContext {
 
   ScaffoldFeatureController<SnackBar, SnackBarClosedReason> snackBar(String message, {bool isError = false}) {
     final icon = isError ? Icons.info_outline : Icons.check_circle_outline;
-    final backgroundColor = isError ? theme.colorScheme.errorContainer : theme.colorScheme.tertiaryContainer;
-    final foregroundColor = isError ? theme.colorScheme.error : theme.colorScheme.tertiary;
+    final backgroundColor = isError ? theme.colorScheme.errorContainer : theme.colorScheme.secondaryContainer;
+    final foregroundColor = isError ? theme.colorScheme.error : theme.colorScheme.secondary;
     final snackBar = SnackBar(
       showCloseIcon: true,
       backgroundColor: backgroundColor,

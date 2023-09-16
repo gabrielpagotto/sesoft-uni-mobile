@@ -9,7 +9,8 @@ Dio sesoftClient<T>(SesoftClientRef ref) {
   final authStatus = ref.watch(authServiceProvider.select((value) => value.authStatus));
   final authService = ref.read(authServiceProvider.notifier);
   final baseOptions = BaseOptions(
-    baseUrl: 'https://sesoft-uni-backend-development.up.railway.app',
+    // baseUrl: 'https://sesoft-uni-backend-development.up.railway.app',
+    baseUrl: 'http://127.0.0.1:4000',
     validateStatus: (status) => _validateStatus(status, authStatus),
   );
   final client = Dio(baseOptions);

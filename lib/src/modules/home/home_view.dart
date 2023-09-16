@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sesoft_uni_mobile/src/helpers/extensions/build_context.dart';
+import 'package:sesoft_uni_mobile/src/helpers/providers/current_user.dart';
 import 'package:sesoft_uni_mobile/src/models/profile.dart';
 import 'package:sesoft_uni_mobile/src/models/user.dart';
 import 'package:sesoft_uni_mobile/src/modules/home/home_controller.dart';
@@ -9,6 +10,7 @@ import 'package:sesoft_uni_mobile/src/modules/new_post/new_post_view.dart';
 import 'package:sesoft_uni_mobile/src/modules/posts/posts_view.dart';
 import 'package:sesoft_uni_mobile/src/services/auth_service.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_elevated_button.dart';
+import 'package:sesoft_uni_mobile/src/widgets/sesoft_loader.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_scaffold.dart';
 
 class HomeView extends ConsumerStatefulWidget {
@@ -60,64 +62,71 @@ class _HomeViewState extends ConsumerState<HomeView> {
             DrawerHeader(
               child: SizedBox(
                 width: double.infinity,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.person,
-                      size: 48,
-                    ),
-                    Text('Gabriel Pagotto', style: context.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-                    Text(
-                      'gabrielnpagotto',
-                      style: context.textTheme.titleSmall?.copyWith(
-                        color: context.theme.colorScheme.outline,
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                child: Consumer(builder: (context, ref, _) {
+                  final currentUserAsyncValue = ref.watch(currentUserProvider);
+                  return currentUserAsyncValue.when(
+                    data: (currentUser) => Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Row(
-                          children: [
-                            Text(
-                              '177',
-                              style: context.textTheme.titleMedium?.copyWith(
-                                color: context.theme.colorScheme.outline,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(width: 2.5),
-                            Text(
-                              'Seguindo',
-                              style: context.textTheme.titleSmall?.copyWith(
-                                color: context.theme.colorScheme.outline,
-                              ),
-                            ),
-                          ],
+                        const Icon(
+                          Icons.person,
+                          size: 48,
                         ),
-                        const SizedBox(width: 20),
+                        Text(currentUser.profile!.displayName, style: context.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                        Text(
+                          currentUser.username,
+                          style: context.textTheme.titleSmall?.copyWith(
+                            color: context.theme.colorScheme.outline,
+                          ),
+                        ),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              '34',
-                              style: context.textTheme.titleMedium?.copyWith(
-                                color: context.theme.colorScheme.outline,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            Row(
+                              children: [
+                                Text(
+                                  currentUser.followingsCount.toString(),
+                                  style: context.textTheme.titleMedium?.copyWith(
+                                    color: context.theme.colorScheme.outline,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(width: 2.5),
+                                Text(
+                                  'Seguindo',
+                                  style: context.textTheme.titleSmall?.copyWith(
+                                    color: context.theme.colorScheme.outline,
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 2.5),
-                            Text(
-                              'Seguidores',
-                              style: context.textTheme.titleSmall?.copyWith(
-                                color: context.theme.colorScheme.outline,
-                              ),
-                            ),
+                            const SizedBox(width: 20),
+                            Row(
+                              children: [
+                                Text(
+                                  currentUser.followersCount.toString(),
+                                  style: context.textTheme.titleMedium?.copyWith(
+                                    color: context.theme.colorScheme.outline,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(width: 2.5),
+                                Text(
+                                  'Seguidores',
+                                  style: context.textTheme.titleSmall?.copyWith(
+                                    color: context.theme.colorScheme.outline,
+                                  ),
+                                ),
+                              ],
+                            )
                           ],
                         )
                       ],
-                    )
-                  ],
-                ),
+                    ),
+                    error: ((error, stackTrace) => Container()),
+                    loading: () => const SesoftLoader(),
+                  );
+                }),
               ),
             ),
             Expanded(
@@ -135,6 +144,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
                         username: 'gabrielnpagotto',
                         email: 'gabriel.pagotto@icloud.com',
                         profile: Profile(id: 'id', displayName: 'Gabriel Pagotto'),
+                        followersCount: 0,
+                        followingsCount: 0,
                       ),
                     );
                   },

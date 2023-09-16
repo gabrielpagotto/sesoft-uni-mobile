@@ -4,6 +4,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sesoft_uni_mobile/src/clients/sesoft_client.dart';
 import 'package:sesoft_uni_mobile/src/exceptions/service_exception.dart';
+import 'package:sesoft_uni_mobile/src/services/user_service.dart';
 
 part 'auth_service.freezed.dart';
 part 'auth_service.g.dart';
@@ -28,6 +29,8 @@ class AuthService extends _$AuthService {
   AuthServiceState build() => const AuthServiceState();
 
   static const _tokenKey = 'AuthService.AccessToken';
+
+  UserService get _userService => ref.read(userServiceProvider.notifier);
 
   Future<void> _realizeLoginWithAccessToken(String token) async {
     await state.storage.write(key: _tokenKey, value: token);
