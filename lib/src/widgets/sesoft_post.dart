@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sesoft_uni_mobile/src/helpers/extensions/build_context.dart';
 import 'package:sesoft_uni_mobile/src/models/post.dart';
+import 'package:sesoft_uni_mobile/src/widgets/sesoft_profile_icon.dart';
 
 class SesoftPost extends StatelessWidget {
   const SesoftPost({super.key, required this.post});
@@ -17,15 +18,7 @@ class SesoftPost extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                margin: const EdgeInsets.only(left: 10),
-                padding: const EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: context.theme.dividerColor),
-                ),
-                child: const Icon(Icons.person, size: 35),
-              ),
+              SesoftProfileIcon(user: post.user!),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(

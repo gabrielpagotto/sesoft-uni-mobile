@@ -7,6 +7,7 @@ import 'package:sesoft_uni_mobile/src/models/profile.dart';
 import 'package:sesoft_uni_mobile/src/models/user.dart';
 import 'package:sesoft_uni_mobile/src/services/auth_service.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_elevated_button.dart';
+import 'package:sesoft_uni_mobile/src/widgets/sesoft_profile_icon.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class HomeDrawerWidget extends ConsumerWidget {
@@ -101,13 +102,14 @@ class _HomeDrawerHeader extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const Icon(
-          Icons.person,
-          size: 48,
+        SesoftProfileIcon(
+          size: 45,
+          user: currentUser ?? const User(id: "", username: "", email: ""),
         ),
+        const SizedBox(height: 5),
         Text(
           currentUser?.profile?.displayName ?? 'Gabriel Pagotto',
-          style: context.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          style: context.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         Text(
           currentUser?.username ?? 'gabrielpagotto',
@@ -115,7 +117,6 @@ class _HomeDrawerHeader extends StatelessWidget {
             color: context.theme.colorScheme.outline,
           ),
         ),
-        const SizedBox(height: 5),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

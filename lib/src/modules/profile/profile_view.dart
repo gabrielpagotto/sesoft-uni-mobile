@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sesoft_uni_mobile/src/helpers/extensions/build_context.dart';
 import 'package:sesoft_uni_mobile/src/models/user.dart';
+import 'package:sesoft_uni_mobile/src/widgets/sesoft_profile_icon.dart';
 
 class ProfileView extends StatefulWidget {
   final User user;
@@ -97,16 +98,10 @@ class _ProfileViewState extends State<ProfileView> {
                               ],
                             ),
                           ),
-                          Container(
-                            width: 35,
-                            height: 35,
-                            margin: const EdgeInsets.only(right: 20),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color: context.theme.dividerColor),
-                            ),
-                            child: const Icon(Icons.person),
-                          )
+                          Padding(
+                            padding: const EdgeInsets.only(right: 20),
+                            child: SesoftProfileIcon(user: widget.user, size: 25),
+                          ),
                         ],
                       ),
                       ValueListenableBuilder(
