@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sesoft_uni_mobile/src/clients/sesoft_client.dart';
 
@@ -11,8 +10,6 @@ class PostsService extends _$PostsService {
 
   Future<void> create(String content) async {
     final client = ref.read(sesoftClientProvider);
-    try {
-      await client.post('/posts', data: {'content': content});
-    } on DioException {}
+    await client.post('/posts', data: {'content': content});
   }
 }
