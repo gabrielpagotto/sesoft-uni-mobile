@@ -9,6 +9,7 @@ part 'timeline_service.g.dart';
 class TimelineService extends _$TimelineService {
   @override
   Future<List<Post>> build() async {
+    await Future.delayed(const Duration(seconds: 6));
     final client = ref.read(sesoftClientProvider);
     final authStatus = ref.watch(authServiceProvider.select((value) => value.authStatus));
     if (authStatus == AuthStatus.authenticated) {
