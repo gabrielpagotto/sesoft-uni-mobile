@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sesoft_uni_mobile/src/modules/posts/posts_controller.dart';
@@ -18,7 +19,12 @@ class _PostsViewState extends ConsumerState<PostsView> {
     final postsState = ref.watch(postsControllerProvider);
     final timelineService = ref.watch(timelineServiceProvider);
     return timelineService.when(
-      error: (error, trace) => const Text('Ocorreu um erro'),
+      error: (error, trace) {
+        if (kDebugMode) {
+          print(error);
+        }
+        return const Text('Ocorreu um erro');
+      },
       loading: () => const SesoftLoader(),
       data: (posts) => ListView.separated(
         key: postsState.pageStorageKey,

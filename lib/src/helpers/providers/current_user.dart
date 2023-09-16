@@ -5,11 +5,11 @@ import 'package:sesoft_uni_mobile/src/services/user_service.dart';
 
 part 'current_user.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true, dependencies: [AuthService])
 class CurrentUser extends _$CurrentUser {
   @override
   Future<User> build() async {
-    final authService = ref.read(authServiceProvider);
+    final authService = ref.watch(authServiceProvider);
     if ([AuthStatus.unknown, AuthStatus.unauthenticated].contains(authService.authStatus)) {
       throw Exception('This provider only on $AuthService with ${AuthStatus.authenticated} status');
     }

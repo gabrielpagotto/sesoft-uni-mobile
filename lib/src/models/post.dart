@@ -11,6 +11,7 @@ class Post with _$Post {
     required String id,
     required String content,
     required int likesCount,
+    required int repliesCount,
     User? user,
     DateTime? createdAt,
     DateTime? updatedAt,
