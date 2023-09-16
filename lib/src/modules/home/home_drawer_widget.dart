@@ -50,9 +50,8 @@ class HomeDrawerWidget extends ConsumerWidget {
                 return currentUserAsyncValue.when(
                   data: (currentUser) => _HomeDrawerHeader(currentUser),
                   error: ((error, stackTrace) => Container()),
-                  loading: () => Skeletonizer(
-                    textBoneBorderRadius: TextBoneBorderRadius.fromHeightFactor(34),
-                    child: const _HomeDrawerHeader(null),
+                  loading: () => const Skeletonizer(
+                    child: _HomeDrawerHeader(null),
                   ),
                 );
               }),
