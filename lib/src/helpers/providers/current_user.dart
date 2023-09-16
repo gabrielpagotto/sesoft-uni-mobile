@@ -13,6 +13,7 @@ class CurrentUser extends _$CurrentUser {
     if ([AuthStatus.unknown, AuthStatus.unauthenticated].contains(authService.authStatus)) {
       throw Exception('This provider only on $AuthService with ${AuthStatus.authenticated} status');
     }
+    await Future.delayed(const Duration(seconds: 5));
     return await ref.read(userServiceProvider.notifier).me();
   }
 }
