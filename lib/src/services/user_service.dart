@@ -25,7 +25,6 @@ class UserService extends _$UserService {
   Future<User> find(String id) async {
     final client = ref.watch(sesoftClientProvider);
     final response = await client.get('/users/find/$id');
-    await Future.delayed(const Duration(seconds: 3));
     return User.fromJson(response.data);
   }
 }

@@ -98,11 +98,11 @@ class _HomeDrawerHeader extends StatelessWidget {
         ),
         const SizedBox(height: 5),
         Text(
-          currentUser?.profile?.displayName ?? 'Gabriel Pagotto',
+          currentUser?.profile?.displayName ?? 'unknown display',
           style: context.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         Text(
-          currentUser?.username ?? 'gabrielpagotto',
+          currentUser?.username ?? 'unknownusername',
           style: context.textTheme.titleSmall?.copyWith(
             color: context.theme.colorScheme.outline,
           ),
