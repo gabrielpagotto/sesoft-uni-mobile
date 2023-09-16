@@ -29,7 +29,6 @@ class _PostsViewState extends ConsumerState<PostsView> {
         return const Text('Ocorreu um erro');
       },
       loading: () => Skeletonizer(
-        justifyMultiLineText: true,
         child: ListView.separated(
           key: postsState.pageStorageKey,
           itemCount: 15,
