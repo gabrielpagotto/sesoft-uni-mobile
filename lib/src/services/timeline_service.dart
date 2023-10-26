@@ -7,8 +7,7 @@ part 'timeline_service.g.dart';
 
 @Riverpod(keepAlive: true)
 class TimelineService extends _$TimelineService {
-  @override
-  Future<List<Post>> build() async {
+  Future<List<Post>> _getPosts() async {
     final client = ref.read(sesoftClientProvider);
     final authStatus = ref.watch(authServiceProvider.select((value) => value.authStatus));
     if (authStatus == AuthStatus.authenticated) {
@@ -17,5 +16,14 @@ class TimelineService extends _$TimelineService {
     } else {
       return [];
     }
+  }
+
+  @override
+  Future<List<Post>> build() async {
+    return _getPosts();
+  }
+
+  void refresh() {
+    update((p0) => _getPosts());
   }
 }

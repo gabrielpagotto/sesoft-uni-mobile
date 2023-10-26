@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sesoft_uni_mobile/src/exceptions/service_exception.dart';
 import 'package:sesoft_uni_mobile/src/helpers/utils/snackbar.dart';
 import 'package:sesoft_uni_mobile/src/services/posts_service.dart';
+import 'package:sesoft_uni_mobile/src/services/timeline_service.dart';
 import 'package:sesoft_uni_mobile/src/settings/router.dart';
 
 part 'new_post_controller.freezed.dart';
@@ -45,6 +46,7 @@ class NewPostController extends _$NewPostController {
       await postsService.create(state.contentController.text);
       SesoftSnackbar.success('Postagem foi publicada com sucesso.');
       router.pop();
+      ref.read(timelineServiceProvider.notifier).refresh();
     } on ServiceException catch (err) {
       SesoftSnackbar.error(err.message);
     } finally {
