@@ -15,24 +15,22 @@ class HomeDrawerWidget extends ConsumerWidget {
   const HomeDrawerWidget({super.key});
 
   Future<void> _signout(BuildContext context, WidgetRef ref) async {
-    context.pop();
-    final dialog = AlertDialog(
-      title: const Text('Deslogar-se?'),
-      content: const Text('Ao se deslogar do aplicativo será necessário se autenticar novamente para acessar.'),
-      actions: [
-        TextButton(
-          child: const Text('Voltar'),
-          onPressed: () => context.pop(false),
-        ),
-        SesoftElevatedButton(
-          child: const Text('Continuar'),
-          onPressed: () => context.pop(true),
-        ),
-      ],
-    );
     final result = await showDialog<bool?>(
       context: context,
-      builder: (context) => dialog,
+      builder: (context) => AlertDialog(
+        title: const Text('Deslogar-se?'),
+        content: const Text('Ao se deslogar do aplicativo será necessário se autenticar novamente para acessar.'),
+        actions: [
+          TextButton(
+            child: const Text('Voltar'),
+            onPressed: () => context.pop(false),
+          ),
+          SesoftElevatedButton(
+            child: const Text('Continuar'),
+            onPressed: () => context.pop(true),
+          ),
+        ],
+      ),
     );
     if (result != null && result) {
       ref.read(authServiceProvider.notifier).signout();
