@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:sesoft_uni_mobile/src/services/posts_service.dart';
 import 'package:sesoft_uni_mobile/src/services/timeline_service.dart';
 
 part 'posts_controller.freezed.dart';
@@ -20,4 +21,9 @@ class PostsController extends _$PostsController {
   PostsState build() => PostsState();
 
   TimelineService get timelineService => ref.read(timelineServiceProvider.notifier);
+
+  like() async {
+    final postsService = ref.read(postsServiceProvider.notifier);
+    await postsService.like("234");
+  }
 }

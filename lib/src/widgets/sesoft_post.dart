@@ -1,15 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sesoft_uni_mobile/src/exceptions/service_exception.dart';
 import 'package:sesoft_uni_mobile/src/helpers/extensions/build_context.dart';
+import 'package:sesoft_uni_mobile/src/helpers/utils/snackbar.dart';
 import 'package:sesoft_uni_mobile/src/models/post.dart';
+import 'package:sesoft_uni_mobile/src/services/posts_service.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_profile_icon.dart';
 
-class SesoftPost extends StatelessWidget {
+class SesoftPost extends ConsumerWidget {
   const SesoftPost({super.key, required this.post});
 
   final Post post;
 
+  Future<void> _like(WidgetRef ref) async {
+    final postsService = ref.read(postsServiceProvider.notifier);
+    try {
+      await postsService.like(post.id);
+    } on ServiceException catch (err) {
+      SesoftSnackbar.error(err.message);
+    }
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Ink(
       child: InkWell(
         onTap: () {},
@@ -62,7 +75,7 @@ class SesoftPost extends StatelessWidget {
                         Row(
                           children: [
                             IconButton(
-                              onPressed: () {},
+                              onPressed: () => _like(ref),
                               icon: const Icon(Icons.favorite),
                               iconSize: 15,
                               padding: EdgeInsets.zero,
