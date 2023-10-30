@@ -4,7 +4,9 @@ import 'package:sesoft_uni_mobile/src/exceptions/service_exception.dart';
 import 'package:sesoft_uni_mobile/src/helpers/extensions/build_context.dart';
 import 'package:sesoft_uni_mobile/src/helpers/utils/snackbar.dart';
 import 'package:sesoft_uni_mobile/src/models/post.dart';
+import 'package:sesoft_uni_mobile/src/modules/posts/posts_controller.dart';
 import 'package:sesoft_uni_mobile/src/services/posts_service.dart';
+import 'package:sesoft_uni_mobile/src/services/timeline_service.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_profile_icon.dart';
 
 class SesoftPost extends ConsumerWidget {
@@ -16,6 +18,8 @@ class SesoftPost extends ConsumerWidget {
     final postsService = ref.read(postsServiceProvider.notifier);
     try {
       await postsService.like(post.id);
+      ref.read(postsControllerProvider.notifier);
+      ref.read(timelineServiceProvider.notifier).setPostLiked(post.id);
     } on ServiceException catch (err) {
       SesoftSnackbar.error(err.message);
     }

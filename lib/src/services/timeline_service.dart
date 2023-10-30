@@ -26,4 +26,16 @@ class TimelineService extends _$TimelineService {
   void refresh() {
     update((p0) => _getPosts());
   }
+
+  Future<void> setPostLiked(String id) async {
+    final dataAsyncValue = state.asData;
+    var posts = dataAsyncValue?.value ?? [];
+    posts = posts.map((e) {
+      if (e.id == id) {
+        return e.copyWith(liked: true);
+      }
+      return e;
+    }).toList();
+    update((p0) => posts);
+  }
 }
