@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sesoft_uni_mobile/src/models/post.dart';
 import 'package:sesoft_uni_mobile/src/models/profile.dart';
 import 'package:sesoft_uni_mobile/src/models/user.dart';
+import 'package:sesoft_uni_mobile/src/modules/home/home_controller.dart';
 import 'package:sesoft_uni_mobile/src/modules/posts/posts_controller.dart';
 import 'package:sesoft_uni_mobile/src/services/timeline_service.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_post.dart';
@@ -56,6 +57,7 @@ class _PostsViewState extends ConsumerState<PostsView> {
       data: (posts) => ListView.separated(
         key: postsState.pageStorageKey,
         itemCount: posts.length,
+        controller: ref.watch(homeControllerProvider.select((value) => value.scrollController)),
         itemBuilder: (context, index) => Consumer(builder: (context, ref, _) {
           return SesoftPost(post: ref.watch(postsControllerProvider.select((value) => posts[index])));
         }),
