@@ -18,9 +18,19 @@ class PostsService extends _$PostsService {
   Future<void> like(String postId) async {
     final client = ref.read(sesoftClientProvider);
     try {
-      await client.post("/post/$postId/like");
-    } on DioException {
-      throw ServiceException('Ocorrreu um esasdflkasjdfn s');
+      await client.post("/posts/$postId/like");
+    } on DioException catch (err) {
+      throw ServiceException(err.message.toString());
+    }
+  }
+
+  Future<void> unlike(String postId) async {
+    final client = ref.read(sesoftClientProvider);
+    try {
+      print("/posts/$postId/unlike");
+      await client.post("/posts/$postId/unlike");
+    } on DioException catch (err) {
+      throw ServiceException(err.message.toString());
     }
   }
 }

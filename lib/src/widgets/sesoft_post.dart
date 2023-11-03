@@ -14,15 +14,53 @@ class SesoftPost extends ConsumerWidget {
 
   final Post post;
 
-  Future<void> _like(WidgetRef ref) async {
+  Future<void> handleRate(WidgetRef ref) async {
+    try {
+      if (post.liked) {
+        await unlike(ref);
+        return;
+      }
+
+      await like(ref);
+    } on ServiceException catch (err) {
+      showSnackbarError(err.message);
+    }
+  }
+
+  Future<void> like(WidgetRef ref) async {
     final postsService = ref.read(postsServiceProvider.notifier);
+
     try {
       await postsService.like(post.id);
       ref.read(postsControllerProvider.notifier);
-      ref.read(timelineServiceProvider.notifier).setPostLiked(post.id);
+      ref.read(timelineServiceProvider.notifier).setPostRate(post.id, true);
+
+      showSnackbarSuccess('Publicação curtida!');
     } on ServiceException catch (err) {
-      SesoftSnackbar.error(err.message);
+      showSnackbarError(err.message);
     }
+  }
+
+  Future<void> unlike(WidgetRef ref) async {
+    final postsService = ref.read(postsServiceProvider.notifier);
+
+    try {
+      await postsService.unlike(post.id);
+      ref.read(postsControllerProvider.notifier);
+      ref.read(timelineServiceProvider.notifier).setPostRate(post.id, false);
+
+      showSnackbarSuccess('Publicação descurtida!');
+    } on ServiceException catch (err) {
+      showSnackbarError(err.message);
+    }
+  }
+
+  void showSnackbarError(String message) {
+    SesoftSnackbar.error(message);
+  }
+
+  void showSnackbarSuccess(String message) {
+    SesoftSnackbar.success(message);
   }
 
   @override
@@ -52,7 +90,8 @@ class SesoftPost extends ConsumerWidget {
                         const SizedBox(width: 5),
                         Text(
                           "@${post.user!.username}",
-                          style: context.textTheme.titleSmall?.copyWith(color: context.theme.colorScheme.outline),
+                          style: context.textTheme.titleSmall?.copyWith(
+                              color: context.theme.colorScheme.outline),
                         ),
                       ],
                     ),
@@ -73,14 +112,19 @@ class SesoftPost extends ConsumerWidget {
                               iconSize: 15,
                               padding: EdgeInsets.zero,
                             ),
-                            Text(post.likesCount.toString()),
+                            Text(post.repliesCount.toString()),
                           ],
                         ),
                         Row(
                           children: [
                             IconButton(
-                              onPressed: () => _like(ref),
-                              icon: const Icon(Icons.favorite),
+                              onPressed: () => handleRate(ref),
+                              icon: Icon(
+                                post.liked
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                color: post.liked ? Colors.red : null,
+                              ),
                               iconSize: 15,
                               padding: EdgeInsets.zero,
                             ),
