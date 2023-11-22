@@ -1,7 +1,9 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sesoft_uni_mobile/src/models/post.dart';
-import 'package:sesoft_uni_mobile/src/services/posts_service.dart';
+import 'package:sesoft_uni_mobile/src/models/user.dart';
 
 class Comment {
   final String userName;
@@ -16,10 +18,9 @@ class Comment {
 }
 
 class SesoftOnePost extends ConsumerWidget {
-  SesoftOnePost({super.key, required this.postId});
+  SesoftOnePost({super.key, required this.post});
 
-  final String postId;
-  late Post post;
+  final Post post;
 
   List<Comment> comments = [
     Comment(userName: 'Nome1', userAlias: 'nomeusuario1', text: 'Comentário 1'),
@@ -28,17 +29,9 @@ class SesoftOnePost extends ConsumerWidget {
   ];
 
   TextEditingController commentController = TextEditingController();
-  int likesCount = 0;
-
-  Future<void> handleFindPost(WidgetRef ref) async {
-    final postsService = ref.read(postsServiceProvider.notifier);
-    final response = await postsService.getPost(postId);
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    handleFindPost(ref);
-
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -46,25 +39,27 @@ class SesoftOnePost extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildAuthorHeader(),
+              _buildAuthorHeader(post.user),
               const SizedBox(height: 16.0),
-              const Text(
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum',
-                style: TextStyle(fontSize: 16.0),
+              Text(
+                post.content,
+                style: const TextStyle(fontSize: 16.0),
               ),
               const SizedBox(height: 16.0),
               Row(
                 children: [
                   IconButton(
                     onPressed: () => {},
-                    icon: const Icon(
-                      Icons.favorite,
-                      color: Colors.red,
+                    icon: Icon(
+                      post.userLiked == true
+                          ? Icons.favorite
+                          : Icons.favorite_border,
+                      color: post.userLiked == true ? Colors.red : null,
                     ),
                     iconSize: 15,
                     padding: EdgeInsets.zero,
                   ),
-                  Text(10.toString()),
+                  Text(post.likesCount.toString()),
                 ],
               ),
               TextField(
@@ -99,29 +94,30 @@ class SesoftOnePost extends ConsumerWidget {
     );
   }
 
-  Widget _buildAuthorHeader() {
-    return const Row(
+  Widget _buildAuthorHeader(User? user) {
+    if (user == null) {
+      return const SizedBox.shrink();
+    }
+    return Row(
       children: [
-        CircleAvatar(
+        const CircleAvatar(
           radius: 30,
           backgroundColor: Colors.grey,
-          // Adicione a imagem do usuário aqui
-          // backgroundImage: AssetImage('caminho/para/imagem.png'),
         ),
-        SizedBox(width: 16.0),
+        const SizedBox(width: 16.0),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Leonardo Oliveira',
-              style: TextStyle(
+              user.profile?.displayName ?? '',
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18.0,
               ),
             ),
             Text(
-              '@leonardo',
-              style: TextStyle(
+              user.username,
+              style: const TextStyle(
                 color: Colors.grey,
                 fontSize: 16.0,
               ),
