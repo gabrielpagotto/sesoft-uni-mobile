@@ -47,17 +47,14 @@ class PostView extends ConsumerWidget {
 }
 
 class _Body extends StatelessWidget {
-  const _Body({
-    required this.post,
-  });
+  const _Body({required this.post});
 
   final Post post;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      body: ListView(
         children: [
           Padding(
             padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
@@ -137,14 +134,8 @@ class _Body extends StatelessWidget {
               ],
             ),
           ),
-          Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.only(top: 10, bottom: 10 + MediaQuery.of(context).padding.bottom),
-              itemCount: post.replies.length,
-              itemBuilder: (context, index) {
-                return SesoftPost(post: post.replies[index]);
-              },
-            ),
+          Column(
+            children: post.replies.map((e) => SesoftPost(post: e)).toList(),
           ),
         ],
       ),
