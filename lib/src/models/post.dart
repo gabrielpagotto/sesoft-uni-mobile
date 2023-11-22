@@ -11,13 +11,14 @@ class Post with _$Post {
   const factory Post({
     required String id,
     required String content,
-    required int likesCount,
-    required int repliesCount,
+    @Default(0) int likesCount,
+    int? repliesCount, // TODO: Colocar como requerido quando a API for atualizada
     User? user,
     DateTime? createdAt,
     DateTime? updatedAt,
     @Default(false) bool liked,
     @Default(false) bool? userLiked,
+    @Default([]) List<Post> replies,
   }) = _Post;
 
   factory Post.fromJson(Map<String, Object?> json) => _$PostFromJson(json);
