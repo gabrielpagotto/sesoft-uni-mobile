@@ -28,7 +28,6 @@ class PostsService extends _$PostsService {
   Future<void> unlike(String postId) async {
     final client = ref.read(sesoftClientProvider);
     try {
-      print("/posts/$postId/unlike");
       await client.post("/posts/$postId/unlike");
     } on DioException catch (err) {
       throw ServiceException(err.message.toString());
@@ -37,7 +36,7 @@ class PostsService extends _$PostsService {
 
   Future<Post> getPost(String postId) async {
     final client = ref.read(sesoftClientProvider);
-    final response = await client.get("/get/$postId");
+    final response = await client.get("/posts/$postId");
     return Post.fromJson(response.data);
   }
 }

@@ -17,6 +17,7 @@ class Post with _$Post {
     DateTime? createdAt,
     DateTime? updatedAt,
     @Default(false) bool liked,
+    @Default(false) bool? userLiked,
   }) = _Post;
 
   factory Post.fromJson(Map<String, Object?> json) => _$PostFromJson(json);
