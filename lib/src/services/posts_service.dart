@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sesoft_uni_mobile/src/clients/sesoft_client.dart';
 import 'package:sesoft_uni_mobile/src/exceptions/service_exception.dart';
+import 'package:sesoft_uni_mobile/src/models/post.dart';
 
 part 'posts_service.g.dart';
 
@@ -32,5 +33,11 @@ class PostsService extends _$PostsService {
     } on DioException catch (err) {
       throw ServiceException(err.message.toString());
     }
+  }
+
+  Future<Post> getPost(String postId) async {
+    final client = ref.read(sesoftClientProvider);
+    final response = await client.get("/get/$postId");
+    return Post.fromJson(response.data);
   }
 }
