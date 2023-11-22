@@ -39,4 +39,14 @@ class PostsService extends _$PostsService {
     final response = await client.get("/posts/$postId");
     return Post.fromJson(response.data);
   }
+
+  Future<Post> reply(String postId, String content) async {
+    final client = ref.read(sesoftClientProvider);
+    try {
+      final response = await client.post("/posts/$postId/reply", data: {'content': content});
+      return Post.fromJson(response.data);
+    } on DioException catch (err) {
+      throw ServiceException(err.message.toString());
+    }
+  }
 }
