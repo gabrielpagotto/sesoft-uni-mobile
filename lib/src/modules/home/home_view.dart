@@ -5,6 +5,7 @@ import 'package:sesoft_uni_mobile/src/modules/home/home_controller.dart';
 import 'package:sesoft_uni_mobile/src/modules/home/home_drawer_widget.dart';
 import 'package:sesoft_uni_mobile/src/modules/new_post/new_post_view.dart';
 import 'package:sesoft_uni_mobile/src/modules/posts/posts_view.dart';
+import 'package:sesoft_uni_mobile/src/modules/search_users/search_users_view.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_scaffold.dart';
 
 class HomeView extends ConsumerStatefulWidget {
@@ -24,7 +25,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
   Widget build(BuildContext context) {
     return SesoftScaffold(
       titleText: 'Sesoft Uni',
-      body: ref.watch(homeControllerProvider.select((value) => value.currentTabIndex)) == 0 ? const PostsView() : Container(),
+      body: ref.watch(homeControllerProvider.select((value) => value.currentTabIndex)) == 0 ? const PostsView() : const SearchUsersView(),
       drawer: const HomeDrawerWidget(),
       floatingActionButton: ref.watch(homeControllerProvider.select((value) => value.currentTabIndex == 0))
           ? FloatingActionButton(

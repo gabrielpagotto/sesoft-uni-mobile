@@ -31,15 +31,24 @@ class SesoftProfileIcon extends StatelessWidget {
       child: Material(
         shape: const CircleBorder(),
         borderOnForeground: false,
-        child: Ink(
-          padding: const EdgeInsets.all(5),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: context.theme.dividerColor),
-          ),
-          child: GestureDetector(
-            onTap: () => goToProfile(context),
-            child: user.profile?.icon?.url != null ? SizedBox(width: size, height: size, child: Image.network(user.profile!.icon!.url!)) : Icon(Icons.person, size: size),
+        child: GestureDetector(
+          onTap: () => goToProfile(context),
+          child: Container(
+            height: 50,
+            width: 50,
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: context.theme.dividerColor),
+            ),
+            child: user.profile?.icon?.url != null
+                ? Expanded(
+                    child: Image.network(
+                      user.profile!.icon!.url!,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                : Icon(Icons.person, size: size),
           ),
         ),
       ),

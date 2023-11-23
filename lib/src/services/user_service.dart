@@ -27,4 +27,10 @@ class UserService extends _$UserService {
     final response = await client.get('/users/find/$id');
     return User.fromJson(response.data);
   }
+
+  Future<List<User>> list() async {
+    final client = ref.watch(sesoftClientProvider);
+    final response = await client.get('/users');
+    return response.data['result'].map<User>((e) => User.fromJson(e)).toList();
+  }
 }

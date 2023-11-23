@@ -12,7 +12,7 @@ class Post with _$Post {
     required String id,
     required String content,
     @Default(0) int likesCount,
-    int? repliesCount, // TODO: Colocar como requerido quando a API for atualizada
+    @Default(0) int repliesCount,
     User? user,
     DateTime? createdAt,
     DateTime? updatedAt,

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:sesoft_uni_mobile/src/helpers/extensions/stateful_value_notifier_observer.dart';
 
+enum SesoftTextFormFieldType { primary, secondary }
+
 class SesoftTextFormField extends StatefulWidget {
-  final String labelText;
+  final String? labelText;
   final String? hintText;
   final TextInputType keyboardType;
   final TextInputAction textInputAction;
@@ -10,17 +12,19 @@ class SesoftTextFormField extends StatefulWidget {
   final Widget? prefixIcon;
   final String? Function(String? value)? validator;
   final void Function(String value)? onChange;
+  final SesoftTextFormFieldType type;
 
   const SesoftTextFormField({
     super.key,
-    required this.labelText,
     required this.keyboardType,
     required this.textInputAction,
+    this.labelText,
     this.controller,
     this.prefixIcon,
     this.hintText,
     this.validator,
     this.onChange,
+    this.type = SesoftTextFormFieldType.primary,
   });
 
   @override
@@ -35,6 +39,20 @@ class _SesoftTextFormFieldState extends State<SesoftTextFormField> with Stateful
 
   void toggleObscureText() {
     obscureText.value = !obscureText.value;
+  }
+
+  bool get filled => widget.type == SesoftTextFormFieldType.secondary;
+
+  InputBorder? get border {
+    if (widget.type == SesoftTextFormFieldType.secondary) {
+      return const OutlineInputBorder(
+        borderSide: BorderSide.none,
+        borderRadius: BorderRadius.all(
+          Radius.circular(20),
+        ),
+      );
+    }
+    return null;
   }
 
   @override
@@ -56,6 +74,8 @@ class _SesoftTextFormFieldState extends State<SesoftTextFormField> with Stateful
               hintText: widget.hintText,
               alignLabelWithHint: false,
               labelText: widget.labelText,
+              filled: filled,
+              border: border,
               suffixIcon: widget.keyboardType == TextInputType.visiblePassword
                   ? IconButton(
                       onPressed: toggleObscureText,
