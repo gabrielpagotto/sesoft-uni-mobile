@@ -39,7 +39,7 @@ class SesoftProfileIcon extends StatelessWidget {
           ),
           child: GestureDetector(
             onTap: () => goToProfile(context),
-            child: Icon(Icons.person, size: size),
+            child: user.profile?.icon?.url != null ? SizedBox(width: size, height: size, child: Image.network(user.profile!.icon!.url!)) : Icon(Icons.person, size: size),
           ),
         ),
       ),

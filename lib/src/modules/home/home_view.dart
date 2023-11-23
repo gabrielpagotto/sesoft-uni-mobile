@@ -42,7 +42,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
           items: const [
             BottomNavigationBarItem(icon: Icon(Icons.house_rounded), label: 'Página inicial'),
             BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Buscar'),
-            BottomNavigationBarItem(icon: Icon(Icons.notification_add), label: 'Notificações'),
           ],
         );
       }),
