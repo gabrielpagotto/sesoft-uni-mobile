@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sesoft_uni_mobile/src/exceptions/service_exception.dart';
 import 'package:sesoft_uni_mobile/src/helpers/extensions/build_context.dart';
 import 'package:sesoft_uni_mobile/src/helpers/utils/snackbar.dart';
 import 'package:sesoft_uni_mobile/src/models/post.dart';
+import 'package:sesoft_uni_mobile/src/modules/post/post_view.dart';
 import 'package:sesoft_uni_mobile/src/modules/posts/posts_controller.dart';
 import 'package:sesoft_uni_mobile/src/services/posts_service.dart';
 import 'package:sesoft_uni_mobile/src/services/timeline_service.dart';
@@ -63,11 +65,17 @@ class SesoftPost extends ConsumerWidget {
     SesoftSnackbar.success(message);
   }
 
+  void _toPost(BuildContext context) {
+    context.push(PostView.ROUTE, extra: post.id);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Ink(
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          _toPost(context);
+        },
         child: Padding(
           padding: const EdgeInsets.only(top: 10, right: 10),
           child: Row(

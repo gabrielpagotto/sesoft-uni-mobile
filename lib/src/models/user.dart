@@ -10,7 +10,7 @@ class User with _$User {
   const factory User({
     required String id,
     required String username,
-    required String email,
+    required String? email,
     int? followingsCount,
     int? followersCount,
     DateTime? createdAt,
