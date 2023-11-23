@@ -9,10 +9,13 @@ part 'timeline_service.g.dart';
 class TimelineService extends _$TimelineService {
   Future<List<Post>> _getPosts() async {
     final client = ref.read(sesoftClientProvider);
-    final authStatus = ref.watch(authServiceProvider.select((value) => value.authStatus));
+    final authStatus =
+        ref.watch(authServiceProvider.select((value) => value.authStatus));
     if (authStatus == AuthStatus.authenticated) {
       final response = await client.get('/timeline');
-      return response.data['result'].map<Post>((e) => Post.fromJson(e)).toList();
+      return response.data['result']
+          .map<Post>((e) => Post.fromJson(e))
+          .toList();
     } else {
       return [];
     }
@@ -25,5 +28,18 @@ class TimelineService extends _$TimelineService {
 
   void refresh() {
     update((p0) => _getPosts());
+  }
+
+  Future<void> setPostRate(String id, bool rate) async {
+    final posts = state.asData?.value ?? [];
+
+    final updatedPosts = posts.map((post) {
+      final likesCount = rate ? post.likesCount + 1 : post.likesCount - 1;
+      return post.id == id
+          ? post.copyWith(liked: rate, likesCount: likesCount)
+          : post;
+    }).toList();
+
+    update((_) => updatedPosts);
   }
 }
