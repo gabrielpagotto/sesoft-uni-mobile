@@ -4,22 +4,24 @@ import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sesoft_uni_mobile/src/helpers/extensions/build_context.dart';
 import 'package:sesoft_uni_mobile/src/models/user.dart';
+import 'package:sesoft_uni_mobile/src/modules/home/home_controller.dart';
 import 'package:sesoft_uni_mobile/src/modules/profile/profile_view.dart';
+import 'package:sesoft_uni_mobile/src/modules/search_users/search_users_controller.dart';
 import 'package:sesoft_uni_mobile/src/services/user_service.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_loader.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_profile_icon.dart';
-import 'package:sesoft_uni_mobile/src/widgets/sesoft_text_form_field.dart';
 
 part 'search_users_view.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 Future<User> _me(_MeRef ref) async {
-  return ref.watch(userServiceProvider.notifier).me();
+  return ref.read(userServiceProvider.notifier).me();
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 Future<List<User>> userFromSearch(UserFromSearchRef ref) async {
-  final users = await ref.watch(userServiceProvider.notifier).list();
+  final search = ref.watch(homeControllerProvider.select((value) => value.searchFieldText));
+  final users = await ref.read(userServiceProvider.notifier).list(search: search);
   final me = await ref.watch(_meProvider.future);
   users.removeWhere((element) => element.id == me.id);
   return users;
@@ -35,14 +37,6 @@ class SearchUsersView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SesoftTextFormField(
-          hintText: 'Buscar usuários',
-          keyboardType: TextInputType.text,
-          textInputAction: TextInputAction.search,
-          type: SesoftTextFormFieldType.secondary,
-          prefixIcon: Icon(Icons.search),
-        ),
-        const Divider(height: 0),
         Consumer(builder: (context, ref, _) {
           final userFromSearchAsyncValue = ref.watch(userFromSearchProvider);
           return userFromSearchAsyncValue.when(
@@ -60,14 +54,31 @@ class SearchUsersView extends StatelessWidget {
   }
 }
 
-class _Body extends StatelessWidget {
-  const _Body({super.key, required this.users});
+class _Body extends ConsumerWidget {
+  const _Body({required this.users});
 
   final List<User> users;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (users.isEmpty) {
+      final searchText = ref.watch(homeControllerProvider.select((value) => value.searchFieldText));
+      return Align(
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Text(
+            'Não foi encontrado nenhum usuário com "$searchText".',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: context.theme.hintColor,
+              fontSize: 15,
+            ),
+          ),
+        ),
+      );
+    }
     return ListView(
+      key: ref.watch(searchUsersControllerProvider.select((value) => value.pageStorageKey)),
       children: users
           .map((user) => GestureDetector(
                 onTap: () => context.push(ProfileView.ROUTE, extra: user.id),

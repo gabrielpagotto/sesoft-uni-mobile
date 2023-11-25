@@ -28,9 +28,13 @@ class UserService extends _$UserService {
     return User.fromJson(response.data);
   }
 
-  Future<List<User>> list() async {
+  Future<List<User>> list({String? search}) async {
     final client = ref.watch(sesoftClientProvider);
-    final response = await client.get('/users');
+    final qp = <String, String>{};
+    if (search?.isNotEmpty ?? false) {
+      qp['search'] = search!;
+    }
+    final response = await client.get('/users', queryParameters: qp);
     return response.data['result'].map<User>((e) => User.fromJson(e)).toList();
   }
 }

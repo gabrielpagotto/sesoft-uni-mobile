@@ -19,6 +19,5 @@ class PostsController extends _$PostsController {
   @override
   PostsState build() => PostsState();
 
-  TimelineService get timelineService =>
-      ref.read(timelineServiceProvider.notifier);
+  TimelineService get timelineService => ref.read(timelineServiceProvider.notifier);
 }
