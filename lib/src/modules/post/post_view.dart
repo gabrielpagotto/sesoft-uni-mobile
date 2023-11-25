@@ -117,7 +117,8 @@ class _Body extends StatelessWidget {
                 ),
                 Consumer(builder: (context, ref, _) {
                   return TextField(
-                    controller: ref.watch(postControllerProvider).postCommentTextController,
+                    controller: ref.watch(postControllerProvider.select((value) => value.postCommentTextController)),
+                    focusNode: ref.watch(postControllerProvider.select((value) => value.postCommentTextFocusNode)),
                     decoration: InputDecoration(
                       hintText: 'Adicione um comentário',
                       suffixIcon: Consumer(builder: (context, ref, _) {
