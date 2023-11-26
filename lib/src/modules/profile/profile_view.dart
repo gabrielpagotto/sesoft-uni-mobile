@@ -113,14 +113,13 @@ class ProfileView extends ConsumerWidget {
                         loading: () => Skeletonizer(
                           child: ListView.separated(
                             itemCount: 5,
-                            itemBuilder: (context, index) => Consumer(
-                              builder: (context, ref, _) {
-                                return const SesoftPost(
-                                    post: fakePostForOnePostView);
-                              },
-                            ),
-                            separatorBuilder: (context, index) =>
-                                const Divider(height: 0),
+                            itemBuilder: (context, index) {
+                              return const SesoftPost(
+                                  post: fakePostForOnePostView);
+                            },
+                            separatorBuilder: (context, index) {
+                              return const Divider(height: 0);
+                            },
                           ),
                         ),
                         error: (err, stack) =>
@@ -130,6 +129,7 @@ class ProfileView extends ConsumerWidget {
                     Consumer(builder: (context, ref, child) {
                       final likedPostsAsyncValue = ref
                           .watch(_getLikedPostsProvider(userProfileId ?? ''));
+
                       return likedPostsAsyncValue.when(
                         data: (likedPosts) {
                           return UserPostsList(posts: likedPosts);
@@ -137,14 +137,13 @@ class ProfileView extends ConsumerWidget {
                         loading: () => Skeletonizer(
                           child: ListView.separated(
                             itemCount: 5,
-                            itemBuilder: (context, index) => Consumer(
-                              builder: (context, ref, _) {
-                                return const SesoftPost(
-                                    post: fakePostForOnePostView);
-                              },
-                            ),
-                            separatorBuilder: (context, index) =>
-                                const Divider(height: 0),
+                            itemBuilder: (context, index) {
+                              return const SesoftPost(
+                                  post: fakePostForOnePostView);
+                            },
+                            separatorBuilder: (context, index) {
+                              return const Divider(height: 0);
+                            },
                           ),
                         ),
                         error: (err, stack) =>
