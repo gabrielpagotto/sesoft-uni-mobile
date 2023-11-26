@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:sesoft_uni_mobile/src/constants/fake_data.dart';
 import 'package:sesoft_uni_mobile/src/helpers/extensions/build_context.dart';
 import 'package:sesoft_uni_mobile/src/helpers/providers/current_user.dart';
+import 'package:sesoft_uni_mobile/src/models/post.dart';
 import 'package:sesoft_uni_mobile/src/models/user.dart';
 import 'package:sesoft_uni_mobile/src/modules/profile/profile_controller.dart';
 import 'package:sesoft_uni_mobile/src/services/user_service.dart';
+import 'package:sesoft_uni_mobile/src/widgets/sesoft_post.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_profile_icon.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -20,6 +23,18 @@ Future<User> _getUser(_GetUserRef ref, String? userId) async {
   }
 }
 
+@riverpod
+Future<List<Post>> _getPosts(_GetPostsRef ref, String userId) async {
+  final userService = ref.read(userServiceProvider.notifier);
+  return userService.userPosts(userId);
+}
+
+@riverpod
+Future<List<Post>> _getLikedPosts(_GetLikedPostsRef ref, String userId) async {
+  final userService = ref.read(userServiceProvider.notifier);
+  return userService.userPostsLiked(userId);
+}
+
 class ProfileView extends ConsumerWidget {
   final String? userId;
 
@@ -31,13 +46,25 @@ class ProfileView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userAsyncValue = ref.watch(_getUserProvider(userId));
+
+    final String? userProfileId = userAsyncValue.when(
+      data: (data) => data.id,
+      error: (error, stack) {
+        return null;
+      },
+      loading: () {
+        return null;
+      },
+    );
+
     return DefaultTabController(
       length: 3,
       initialIndex: 0,
       child: Scaffold(
         body: Consumer(builder: (context, ref, child) {
           return CustomScrollView(
-            controller: ref.watch(profileControllerProvider.select((value) => value.scrollController)),
+            controller: ref.watch(profileControllerProvider
+                .select((value) => value.scrollController)),
             slivers: [
               SliverAppBar(
                 bottom: const PreferredSize(
@@ -46,7 +73,6 @@ class ProfileView extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       TabBar(tabs: [
-                        Tab(text: 'Postagens'),
                         Tab(text: 'Postagens'),
                         Tab(text: 'Curtidas'),
                       ]),
@@ -64,23 +90,96 @@ class ProfileView extends ConsumerWidget {
                     padding: const EdgeInsets.only(bottom: 40),
                     child: userAsyncValue.when(
                       data: (user) => _ProfileHeaderInfos(user),
-                      error: (err, stack) => const Text("Ocorreu um erro ao buscar"),
-                      loading: () => const Skeletonizer(child: _ProfileHeaderInfos(null)),
+                      error: (err, stack) =>
+                          const Text("Ocorreu um erro ao buscar"),
+                      loading: () =>
+                          const Skeletonizer(child: _ProfileHeaderInfos(null)),
                     ),
                   ),
                   collapseMode: CollapseMode.parallax,
                 ),
               ),
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) => ListTile(title: Text('Item #$index')),
-                  childCount: 1000,
+              SliverFillRemaining(
+                child: TabBarView(
+                  children: [
+                    Consumer(builder: (context, ref, child) {
+                      final postsAsyncValue =
+                          ref.watch(_getPostsProvider(userProfileId ?? ''));
+
+                      return postsAsyncValue.when(
+                        data: (posts) {
+                          return UserPostsList(posts: posts);
+                        },
+                        loading: () => Skeletonizer(
+                          child: ListView.separated(
+                            itemCount: 5,
+                            itemBuilder: (context, index) {
+                              return const SesoftPost(
+                                  post: fakePostForOnePostView);
+                            },
+                            separatorBuilder: (context, index) {
+                              return const Divider(height: 0);
+                            },
+                          ),
+                        ),
+                        error: (err, stack) =>
+                            const Text("Ocorreu um erro ao buscar"),
+                      );
+                    }),
+                    Consumer(builder: (context, ref, child) {
+                      final likedPostsAsyncValue = ref
+                          .watch(_getLikedPostsProvider(userProfileId ?? ''));
+
+                      return likedPostsAsyncValue.when(
+                        data: (likedPosts) {
+                          return UserPostsList(posts: likedPosts);
+                        },
+                        loading: () => Skeletonizer(
+                          child: ListView.separated(
+                            itemCount: 5,
+                            itemBuilder: (context, index) {
+                              return const SesoftPost(
+                                  post: fakePostForOnePostView);
+                            },
+                            separatorBuilder: (context, index) {
+                              return const Divider(height: 0);
+                            },
+                          ),
+                        ),
+                        error: (err, stack) =>
+                            const Text("Ocorreu um erro ao buscar"),
+                      );
+                    }),
+                  ],
                 ),
               ),
             ],
           );
         }),
       ),
+    );
+  }
+}
+
+class UserPostsList extends ConsumerWidget {
+  final List<Post> posts;
+
+  const UserPostsList({Key? key, required this.posts}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return CustomScrollView(
+      slivers: [
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (context, index) {
+              final post = posts[index];
+              return SesoftPost(post: post);
+            },
+            childCount: posts.length,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -107,7 +206,9 @@ class _ProfileHeaderInfos extends StatelessWidget {
                     style: context.textTheme.titleMedium,
                   ),
                   Text(
-                    user?.username == null ? 'unknown username' : '@${user!.username}',
+                    user?.username == null
+                        ? 'unknown username'
+                        : '@${user!.username}',
                     style: context.textTheme.bodySmall?.copyWith(
                       color: context.theme.colorScheme.outline,
                     ),
@@ -144,9 +245,11 @@ class _ProfileHeaderInfos extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    _ProfileHeaderInfoFollow(count: user?.followingsCount ?? 0, label: 'Seguindo'),
+                    _ProfileHeaderInfoFollow(
+                        count: user?.followingsCount ?? 0, label: 'Seguindo'),
                     const SizedBox(width: 10),
-                    _ProfileHeaderInfoFollow(count: user?.followersCount ?? 0, label: 'Seguidores'),
+                    _ProfileHeaderInfoFollow(
+                        count: user?.followersCount ?? 0, label: 'Seguidores'),
                   ],
                 ),
               ),
@@ -155,7 +258,8 @@ class _ProfileHeaderInfos extends StatelessWidget {
           builder: (context, ref, child) {
             return Container(
               padding: const EdgeInsets.only(top: 10),
-              height: ref.watch(profileControllerProvider.select((value) => value.infoContainerHeight)),
+              height: ref.watch(profileControllerProvider
+                  .select((value) => value.infoContainerHeight)),
               width: double.infinity,
               clipBehavior: Clip.antiAlias,
               decoration: const BoxDecoration(),
