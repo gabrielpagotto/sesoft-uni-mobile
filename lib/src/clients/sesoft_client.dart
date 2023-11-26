@@ -6,11 +6,12 @@ part 'sesoft_client.g.dart';
 
 @Riverpod(dependencies: [AuthService])
 Dio sesoftClient<T>(SesoftClientRef ref) {
-  final authStatus = ref.watch(authServiceProvider.select((value) => value.authStatus));
+  final authStatus =
+      ref.watch(authServiceProvider.select((value) => value.authStatus));
   final authService = ref.read(authServiceProvider.notifier);
   final baseOptions = BaseOptions(
-    // baseUrl: 'https://sesoft-uni-backend-development.up.railway.app',
-    baseUrl: 'http://192.168.50.12:4000',
+    baseUrl: 'https://sesoft-uni-backend-development.up.railway.app',
+    // baseUrl: 'http://192.168.50.12:4000',
     validateStatus: (status) => _validateStatus(status, authStatus),
   );
   final client = Dio(baseOptions);
@@ -40,7 +41,8 @@ class _InsertBearerTokenInterceptor extends Interceptor {
   _InsertBearerTokenInterceptor(this.authService);
 
   @override
-  Future<void> onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+  Future<void> onRequest(
+      RequestOptions options, RequestInterceptorHandler handler) async {
     final token = await authService.getToken();
     options.headers['Authorization'] = 'Bearer $token';
     super.onRequest(options, handler);
@@ -53,7 +55,8 @@ class _LogoutIfUnauthorized extends Interceptor {
   _LogoutIfUnauthorized(this.authService);
 
   @override
-  Future<void> onResponse(Response response, ResponseInterceptorHandler handler) async {
+  Future<void> onResponse(
+      Response response, ResponseInterceptorHandler handler) async {
     if (response.statusCode == 401) {
       authService.signout();
     }

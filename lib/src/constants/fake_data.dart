@@ -4,7 +4,8 @@ import 'package:sesoft_uni_mobile/src/models/user.dart';
 
 const fakePostForOnePostView = Post(
   id: "",
-  content: "Isto é somente para gerar um fake que será utilizado para o Skeletonizer",
+  content:
+      "Isto é somente para gerar um fake que será utilizado para o Skeletonizer",
   likesCount: 0,
   repliesCount: 0,
   user: User(
@@ -16,7 +17,8 @@ const fakePostForOnePostView = Post(
   replies: [
     Post(
       id: "",
-      content: "Isto é somente para gerar um fake que será utilizado para o Skeletonizer",
+      content:
+          "Isto é somente para gerar um fake que será utilizado para o Skeletonizer",
       likesCount: 0,
       repliesCount: 0,
       user: User(
@@ -28,7 +30,8 @@ const fakePostForOnePostView = Post(
     ),
     Post(
       id: "",
-      content: "Isto é somente para gerar um fake que será utilizado para o Skeletonizer",
+      content:
+          "Isto é somente para gerar um fake que será utilizado para o Skeletonizer",
       likesCount: 0,
       repliesCount: 0,
       user: User(
@@ -40,7 +43,8 @@ const fakePostForOnePostView = Post(
     ),
     Post(
       id: "",
-      content: "Isto é somente para gerar um fake que será utilizado para o Skeletonizer",
+      content:
+          "Isto é somente para gerar um fake que será utilizado para o Skeletonizer",
       likesCount: 0,
       repliesCount: 0,
       user: User(
@@ -52,7 +56,8 @@ const fakePostForOnePostView = Post(
     ),
     Post(
       id: "",
-      content: "Isto é somente para gerar um fake que será utilizado para o Skeletonizer",
+      content:
+          "Isto é somente para gerar um fake que será utilizado para o Skeletonizer",
       likesCount: 0,
       repliesCount: 0,
       user: User(
@@ -64,7 +69,8 @@ const fakePostForOnePostView = Post(
     ),
     Post(
       id: "",
-      content: "Isto é somente para gerar um fake que será utilizado para o Skeletonizer",
+      content:
+          "Isto é somente para gerar um fake que será utilizado para o Skeletonizer",
       likesCount: 0,
       repliesCount: 0,
       user: User(
