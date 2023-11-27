@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:sesoft_uni_mobile/src/constants/fake_data.dart';
 import 'package:sesoft_uni_mobile/src/helpers/extensions/build_context.dart';
 import 'package:sesoft_uni_mobile/src/helpers/extensions/stateful_value_notifier_observer.dart';
 import 'package:sesoft_uni_mobile/src/helpers/providers/current_user.dart';
@@ -11,6 +12,7 @@ import 'package:sesoft_uni_mobile/src/modules/edit_user/edit_profile_view.dart';
 import 'package:sesoft_uni_mobile/src/modules/follows_and_following/follows_and_following_view.dart';
 import 'package:sesoft_uni_mobile/src/modules/search_users/search_users_view.dart';
 import 'package:sesoft_uni_mobile/src/services/auth_service.dart';
+import 'package:sesoft_uni_mobile/src/services/timeline_service.dart';
 import 'package:sesoft_uni_mobile/src/services/user_service.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_post.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_profile_icon.dart';
@@ -154,10 +156,10 @@ class _ProfileViewState extends ConsumerState<ProfileView> with SingleTickerProv
 
                         return postsAsyncValue.when(
                           data: (posts) {
-                            return UserPostsList(posts: posts);
+                            return UserPostsList(posts: posts, userId: widget.userId);
                           },
-                          loading: () => const Skeletonizer(
-                            child: UserPostsList(posts: []),
+                          loading: () => Skeletonizer(
+                            child: UserPostsList(posts: fakePostsList, userId: widget.userId),
                           ),
                           error: (err, stack) => const Text("Ocorreu um erro ao buscar"),
                         );
@@ -169,10 +171,10 @@ class _ProfileViewState extends ConsumerState<ProfileView> with SingleTickerProv
 
                         return likedPostsAsyncValue.when(
                           data: (likedPosts) {
-                            return UserPostsList(posts: likedPosts);
+                            return UserPostsList(posts: likedPosts, userId: widget.userId);
                           },
-                          loading: () => const Skeletonizer(
-                            child: UserPostsList(posts: []),
+                          loading: () => Skeletonizer(
+                            child: UserPostsList(posts: fakePostsList, userId: widget.userId),
                           ),
                           error: (err, stack) => const Text("Ocorreu um erro ao buscar"),
                         );
@@ -188,8 +190,9 @@ class _ProfileViewState extends ConsumerState<ProfileView> with SingleTickerProv
 
 class UserPostsList extends ConsumerWidget {
   final List<Post> posts;
+  final String? userId;
 
-  const UserPostsList({Key? key, required this.posts}) : super(key: key);
+  const UserPostsList({Key? key, required this.posts, required this.userId}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -201,7 +204,8 @@ class UserPostsList extends ConsumerWidget {
             .map(
               (post) => Column(
                 children: [
-                  SesoftPost(post: post, disabledIconNavigation: ref.watch(authServiceProvider.select((value) => value.currentUser?.id == post.user?.id))),
+                  SesoftPost(
+                      post: post, disabledIconNavigation: ref.watch(authServiceProvider.select((value) => value.currentUser?.id == post.user?.id || post.user?.id == userId))),
                   const Divider(height: 0),
                 ],
               ),
@@ -228,6 +232,7 @@ class _ProfileHeaderInfos extends StatelessWidget {
       ref.invalidate(followersProvider);
       ref.invalidate(getLikedPostsProfileViewProvider);
       ref.invalidate(getUserProfileViewProvider);
+      ref.invalidate(timelineServiceProvider);
     } catch (_) {}
   }
 
@@ -240,6 +245,7 @@ class _ProfileHeaderInfos extends StatelessWidget {
       ref.invalidate(followersProvider);
       ref.invalidate(getLikedPostsProfileViewProvider);
       ref.invalidate(getUserProfileViewProvider);
+      ref.invalidate(timelineServiceProvider);
     } catch (_) {}
   }
 
