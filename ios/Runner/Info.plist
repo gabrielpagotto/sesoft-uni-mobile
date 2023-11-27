@@ -47,5 +47,11 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This functionality is used to select images for posts made by application users</string>
+	<key>NSCameraUsageDescription</key>
+	<string>The camera is used so that the user can take photos for their posts</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>To record videos to send in user posts</string>
 </dict>
 </plist>

@@ -1,5 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:open_file/open_file.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sesoft_uni_mobile/src/exceptions/service_exception.dart';
 import 'package:sesoft_uni_mobile/src/helpers/utils/snackbar.dart';
@@ -16,6 +21,7 @@ class NewPostState with _$NewPostState {
     required TextEditingController contentController,
     @Default(false) bool canSubmit,
     @Default(false) bool isSubmiting,
+    @Default(<XFile>[]) List<XFile> files,
   }) = _NewPostState;
 }
 
@@ -40,10 +46,17 @@ class NewPostController extends _$NewPostController {
     }
   }
 
+  List<File> getFiles() {
+    return state.files.map((e) => File(e.path)).toList();
+  }
+
   Future<void> submit() async {
     try {
       state = state.copyWith(isSubmiting: true);
-      await postsService.create(state.contentController.text);
+      await postsService.create(
+        state.contentController.text,
+        getFiles(),
+      );
       SesoftSnackbar.success('Postagem foi publicada com sucesso.');
       router.pop();
       ref.read(timelineServiceProvider.notifier).refresh();
@@ -52,5 +65,28 @@ class NewPostController extends _$NewPostController {
     } finally {
       state = state.copyWith(isSubmiting: false);
     }
+  }
+
+  Future<void> selectDeviceFiles() async {
+    final permissionStatus = await Permission.photos.request();
+    if (permissionStatus.isDenied) {
+      return;
+    }
+    final picker = ImagePicker();
+    final files = await picker.pickMultiImage();
+    if (files.isEmpty) {
+      return;
+    }
+    state = state.copyWith(files: files);
+  }
+
+  void removeFile(XFile file) async {
+    final files = List<XFile>.from(state.files);
+    files.removeWhere((element) => element.path == file.path);
+    state = state.copyWith(files: files);
+  }
+
+  void showFile(XFile file) {
+    OpenFile.open(file.path);
   }
 }
