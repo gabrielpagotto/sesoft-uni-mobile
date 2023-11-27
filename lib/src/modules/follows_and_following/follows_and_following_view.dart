@@ -58,8 +58,8 @@ class _FollowsAndFollowingViewState extends State<FollowsAndFollowingView> with 
           return TabBar(
             controller: tabController,
             tabs: [
-              Tab(child: Text('${userAsyncValue.value?.followingsCount} Seguindo')),
-              Tab(child: Text('${userAsyncValue.value?.followersCount} Seguidores')),
+              Tab(child: Text('${userAsyncValue.value?.followingsCount ?? 0} Seguindo')),
+              Tab(child: Text('${userAsyncValue.value?.followersCount ?? 0} Seguidores')),
             ],
           );
         }),

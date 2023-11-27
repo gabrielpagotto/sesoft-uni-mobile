@@ -133,7 +133,13 @@ class SesoftPost extends ConsumerWidget {
                   scrollDirection: Axis.horizontal,
                   child: Padding(
                     padding: const EdgeInsets.all(10),
-                    child: Row(children: post.files.map((e) => SesoftPostImage(storage: e)).toList()),
+                    child: Row(
+                        children: post.files
+                            .map((e) => SesoftPostImage(
+                                  storage: e,
+                                  key: ValueKey(e.id),
+                                ))
+                            .toList()),
                   ),
                 ),
               ),
