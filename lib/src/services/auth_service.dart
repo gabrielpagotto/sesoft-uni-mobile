@@ -4,6 +4,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sesoft_uni_mobile/src/clients/sesoft_client.dart';
 import 'package:sesoft_uni_mobile/src/exceptions/service_exception.dart';
+import 'package:sesoft_uni_mobile/src/models/user.dart';
+import 'package:sesoft_uni_mobile/src/services/user_service.dart';
 
 part 'auth_service.freezed.dart';
 part 'auth_service.g.dart';
@@ -19,6 +21,7 @@ class AuthServiceState with _$AuthServiceState {
   const factory AuthServiceState({
     @Default(AuthStatus.unknown) AuthStatus authStatus,
     @Default(FlutterSecureStorage()) FlutterSecureStorage storage,
+    @Default(null) User? currentUser,
   }) = _AuthServiceData;
 }
 
@@ -32,6 +35,8 @@ class AuthService extends _$AuthService {
   Future<void> _realizeLoginWithAccessToken(String token) async {
     await state.storage.write(key: _tokenKey, value: token);
     state = state.copyWith(authStatus: AuthStatus.authenticated);
+    final me = await ref.read(userServiceProvider.notifier).me();
+    state = state.copyWith(currentUser: me);
   }
 
   Future<String?> getToken() async {
@@ -94,6 +99,6 @@ class AuthService extends _$AuthService {
 
   Future<void> signout() async {
     await state.storage.delete(key: _tokenKey);
-    state = state.copyWith(authStatus: AuthStatus.unauthenticated);
+    state = state.copyWith(authStatus: AuthStatus.unauthenticated, currentUser: null);
   }
 }

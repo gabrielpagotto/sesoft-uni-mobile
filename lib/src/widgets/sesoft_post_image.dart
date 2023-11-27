@@ -93,13 +93,11 @@ class _SesoftPostImageState extends State<SesoftPostImage> {
             ),
           ),
         if (loading)
-          Expanded(
-            child: Container(
-              width: 150,
-              height: 200,
-              alignment: Alignment.center,
-              child: const CircularProgressIndicator.adaptive(),
-            ),
+          Container(
+            width: 150,
+            height: 200,
+            alignment: Alignment.center,
+            child: const CircularProgressIndicator.adaptive(),
           ),
         if (widget.onRemove != null)
           Positioned(

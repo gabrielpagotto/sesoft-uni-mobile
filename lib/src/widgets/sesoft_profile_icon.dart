@@ -5,13 +5,21 @@ import 'package:sesoft_uni_mobile/src/models/user.dart';
 import 'package:sesoft_uni_mobile/src/modules/profile/profile_view.dart';
 
 class SesoftProfileIcon extends StatelessWidget {
-  const SesoftProfileIcon({super.key, required this.user, this.size = 35, this.callProfileOnClick = true});
+  const SesoftProfileIcon({
+    super.key,
+    required this.user,
+    this.size = 35,
+    this.callProfileOnClick = true,
+    this.onTap,
+  });
 
   final User user;
   final bool callProfileOnClick;
   final double size;
+  final VoidCallback? onTap;
 
   void goToProfile(BuildContext context) {
+    onTap?.call();
     if (user.id.isEmpty) {
       return;
     }
@@ -34,9 +42,9 @@ class SesoftProfileIcon extends StatelessWidget {
         child: GestureDetector(
           onTap: () => goToProfile(context),
           child: Container(
-            height: 50,
-            width: 50,
             clipBehavior: Clip.antiAliasWithSaveLayer,
+            width: size * 1.2,
+            height: size * 1.2,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(color: context.theme.dividerColor),
@@ -48,7 +56,10 @@ class SesoftProfileIcon extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                   )
-                : Icon(Icons.person, size: size),
+                : ClipRRect(
+                    borderRadius: BorderRadius.circular(50),
+                    child: Icon(Icons.person, size: size),
+                  ),
           ),
         ),
       ),
