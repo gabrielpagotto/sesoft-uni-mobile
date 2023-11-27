@@ -14,9 +14,10 @@ import 'package:sesoft_uni_mobile/src/widgets/sesoft_post_image.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_profile_icon.dart';
 
 class SesoftPost extends ConsumerWidget {
-  const SesoftPost({super.key, required this.post});
+  const SesoftPost({super.key, required this.post, this.disabledIconNavigation = false});
 
   final Post post;
+  final bool disabledIconNavigation;
 
   Future<void> handleRate(WidgetRef ref) async {
     try {
@@ -92,7 +93,7 @@ class SesoftPost extends ConsumerWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SesoftProfileIcon(user: post.user!),
+                  SesoftProfileIcon(key: ValueKey(post.user?.profile?.icon?.id), user: post.user!, callProfileOnClick: !disabledIconNavigation),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Column(

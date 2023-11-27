@@ -64,4 +64,14 @@ class UserService extends _$UserService {
     final response = await client.get('/users/$userId/followers');
     return response.data['result'].map<User>((e) => User.fromJson(e)).toList();
   }
+
+  Future<void> follow(String userId) async {
+    final client = ref.read(sesoftClientProvider);
+    await client.post('/users/$userId/follow');
+  }
+
+  Future<void> unfollow(String userId) async {
+    final client = ref.read(sesoftClientProvider);
+    await client.post('/users/$userId/unfollow');
+  }
 }
