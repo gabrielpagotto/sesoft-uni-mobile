@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:open_file/open_file.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sesoft_uni_mobile/src/exceptions/service_exception.dart';
@@ -84,9 +83,5 @@ class NewPostController extends _$NewPostController {
     final files = List<XFile>.from(state.files);
     files.removeWhere((element) => element.path == file.path);
     state = state.copyWith(files: files);
-  }
-
-  void showFile(XFile file) {
-    OpenFile.open(file.path);
   }
 }

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sesoft_uni_mobile/src/helpers/extensions/build_context.dart';
 import 'package:sesoft_uni_mobile/src/modules/new_post/new_post_controller.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_elevated_button.dart';
+import 'package:sesoft_uni_mobile/src/widgets/sesoft_post_image.dart';
 
 class NewPostView extends StatefulWidget {
   const NewPostView({super.key});
@@ -79,38 +80,11 @@ class _NewPostViewState extends State<NewPostView> {
                         padding: const EdgeInsets.only(bottom: 70, left: 10),
                         child: Row(
                           children: ref.watch(newPostControllerProvider).files.map(
-                            (file) {
-                              return Stack(
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      border: Border.all(color: context.theme.dividerColor),
-                                    ),
-                                    clipBehavior: Clip.antiAliasWithSaveLayer,
-                                    margin: const EdgeInsets.only(right: 10),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: GestureDetector(
-                                        onTap: () => ref.read(newPostControllerProvider.notifier).showFile(file),
-                                        child: Image.file(
-                                          File(file.path),
-                                          fit: BoxFit.cover,
-                                          width: 150,
-                                          height: 200,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Positioned(
-                                    top: 0,
-                                    right: 10,
-                                    child: IconButton.filled(
-                                      onPressed: () => ref.read(newPostControllerProvider.notifier).removeFile(file),
-                                      icon: const Icon(Icons.close),
-                                    ),
-                                  ),
-                                ],
+                            (xfile) {
+                              final file = File(xfile.path);
+                              return SesoftPostImage(
+                                file: file,
+                                onRemove: () => ref.read(newPostControllerProvider.notifier).removeFile(xfile),
                               );
                             },
                           ).toList(),
