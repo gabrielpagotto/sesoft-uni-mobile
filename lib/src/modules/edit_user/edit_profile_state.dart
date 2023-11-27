@@ -10,5 +10,8 @@ class EditProfileState with _$EditProfileState {
     required TextEditingController displayNameTextController,
     required TextEditingController bioTextController,
     required User userEditing,
+    @Default(false) bool hasChanges,
+    @Default(false) bool isSubmiting,
+    @Default(false) bool updatingProfileIcon,
   }) = _EditProfileState;
 }

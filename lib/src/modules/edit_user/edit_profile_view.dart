@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:sesoft_uni_mobile/src/modules/edit_user/edit_profile_controller.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_elevated_button.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_profile_icon.dart';
@@ -23,6 +24,19 @@ class EditProfileView extends ConsumerWidget {
             callProfileOnClick: false,
             size: 90,
           ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton.outlined(
+                onPressed: () => ref.read(editProfileControllerProvider.notifier).changeProfileImage(ImageSource.camera),
+                icon: const Icon(Icons.camera_outlined),
+              ),
+              IconButton.outlined(
+                onPressed: () => ref.read(editProfileControllerProvider.notifier).changeProfileImage(ImageSource.gallery),
+                icon: const Icon(Icons.photo_camera_back_outlined),
+              )
+            ],
+          ),
           SesoftTextFormField(
             keyboardType: TextInputType.name,
             textInputAction: TextInputAction.next,
@@ -37,7 +51,15 @@ class EditProfileView extends ConsumerWidget {
             maxLines: 3,
           ),
           const SizedBox(height: 20),
-          const Align(child: SesoftElevatedButton(child: Text('Salvar alterações'))),
+          Consumer(builder: (context, ref, _) {
+            final disabled = ref.watch(editProfileControllerProvider.select((value) => !value.hasChanges || value.isSubmiting));
+            return Align(
+              child: SesoftElevatedButton(
+                onPressed: disabled ? null : ref.read(editProfileControllerProvider.notifier).submit,
+                child: const Text('Salvar alterações'),
+              ),
+            );
+          }),
         ],
       ),
     );

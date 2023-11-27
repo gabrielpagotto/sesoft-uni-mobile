@@ -50,11 +50,9 @@ class SesoftProfileIcon extends StatelessWidget {
               border: Border.all(color: context.theme.dividerColor),
             ),
             child: user.profile?.icon?.url != null
-                ? Expanded(
-                    child: Image.network(
-                      user.profile!.icon!.url!,
-                      fit: BoxFit.cover,
-                    ),
+                ? Image.network(
+                    user.profile!.icon!.url!,
+                    fit: BoxFit.cover,
                   )
                 : ClipRRect(
                     borderRadius: BorderRadius.circular(50),

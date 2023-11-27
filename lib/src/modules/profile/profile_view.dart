@@ -18,7 +18,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 part 'profile_view.g.dart';
 
 @riverpod
-Future<User> _getUser(_GetUserRef ref, String? userId) async {
+Future<User> getUserProfileView(GetUserProfileViewRef ref, String? userId) async {
   if (userId == null) {
     return ref.read(currentUserProvider.future);
   } else {
@@ -27,13 +27,13 @@ Future<User> _getUser(_GetUserRef ref, String? userId) async {
 }
 
 @riverpod
-Future<List<Post>> _getPosts(_GetPostsRef ref, String userId) async {
+Future<List<Post>> getPostsProfileView(GetPostsProfileViewRef ref, String userId) async {
   final userService = ref.read(userServiceProvider.notifier);
   return userService.userPosts(userId);
 }
 
 @riverpod
-Future<List<Post>> _getLikedPosts(_GetLikedPostsRef ref, String userId) async {
+Future<List<Post>> getLikedPostsProfileView(GetLikedPostsProfileViewRef ref, String userId) async {
   final userService = ref.read(userServiceProvider.notifier);
   return userService.userPostsLiked(userId);
 }
@@ -48,7 +48,7 @@ class ProfileView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userAsyncValue = ref.watch(_getUserProvider(userId));
+    final userAsyncValue = ref.watch(getUserProfileViewProvider(userId));
 
     final String? userProfileId = userAsyncValue.when(
       data: (data) => data.id,
@@ -109,7 +109,7 @@ class ProfileView extends ConsumerWidget {
                 child: TabBarView(
                   children: [
                     Consumer(builder: (context, ref, child) {
-                      final postsAsyncValue = ref.watch(_getPostsProvider(userProfileId ?? ''));
+                      final postsAsyncValue = ref.watch(getPostsProfileViewProvider(userProfileId ?? ''));
 
                       return postsAsyncValue.when(
                         data: (posts) {
@@ -130,7 +130,7 @@ class ProfileView extends ConsumerWidget {
                       );
                     }),
                     Consumer(builder: (context, ref, child) {
-                      final likedPostsAsyncValue = ref.watch(_getLikedPostsProvider(userProfileId ?? ''));
+                      final likedPostsAsyncValue = ref.watch(getLikedPostsProfileViewProvider(userProfileId ?? ''));
 
                       return likedPostsAsyncValue.when(
                         data: (likedPosts) {
