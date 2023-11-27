@@ -8,6 +8,7 @@ import 'package:sesoft_uni_mobile/src/helpers/providers/current_user.dart';
 import 'package:sesoft_uni_mobile/src/models/post.dart';
 import 'package:sesoft_uni_mobile/src/models/user.dart';
 import 'package:sesoft_uni_mobile/src/modules/edit_user/edit_profile_view.dart';
+import 'package:sesoft_uni_mobile/src/modules/follows_and_following/follows_and_following_view.dart';
 import 'package:sesoft_uni_mobile/src/modules/profile/profile_controller.dart';
 import 'package:sesoft_uni_mobile/src/services/auth_service.dart';
 import 'package:sesoft_uni_mobile/src/services/user_service.dart';
@@ -243,9 +244,15 @@ class _ProfileHeaderInfos extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    _ProfileHeaderInfoFollow(count: user?.followingsCount ?? 0, label: 'Seguindo'),
+                    GestureDetector(
+                      onTap: () => context.push(FollowsAndFollowingView.ROUTE, extra: (FollowsAndFollowingViewTab.following, user!.id)),
+                      child: _ProfileHeaderInfoFollow(count: user?.followingsCount ?? 0, label: 'Seguindo'),
+                    ),
                     const SizedBox(width: 10),
-                    _ProfileHeaderInfoFollow(count: user?.followersCount ?? 0, label: 'Seguidores'),
+                    GestureDetector(
+                      onTap: () => context.push(FollowsAndFollowingView.ROUTE, extra: (FollowsAndFollowingViewTab.followers, user!.id)),
+                      child: _ProfileHeaderInfoFollow(count: user?.followersCount ?? 0, label: 'Seguidores'),
+                    ),
                   ],
                 ),
               ),

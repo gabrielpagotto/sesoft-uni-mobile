@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sesoft_uni_mobile/src/helpers/extensions/build_context.dart';
 import 'package:sesoft_uni_mobile/src/helpers/providers/current_user.dart';
 import 'package:sesoft_uni_mobile/src/models/user.dart';
+import 'package:sesoft_uni_mobile/src/modules/follows_and_following/follows_and_following_view.dart';
 import 'package:sesoft_uni_mobile/src/modules/profile/profile_view.dart';
 import 'package:sesoft_uni_mobile/src/modules/settings/settings_view.dart';
 import 'package:sesoft_uni_mobile/src/services/auth_service.dart';
@@ -121,9 +122,15 @@ class _HomeDrawerHeader extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _HomeDrawerHeaderFollowItem(count: currentUser?.followingsCount ?? 0, label: 'Seguindo'),
+            GestureDetector(
+              onTap: currentUser != null ? () => context.push(FollowsAndFollowingView.ROUTE, extra: (FollowsAndFollowingViewTab.following, currentUser!.id)) : null,
+              child: _HomeDrawerHeaderFollowItem(count: currentUser?.followingsCount ?? 0, label: 'Seguindo'),
+            ),
             const SizedBox(width: 20),
-            _HomeDrawerHeaderFollowItem(count: currentUser?.followersCount ?? 0, label: 'Seguidores'),
+            GestureDetector(
+              onTap: currentUser != null ? () => context.push(FollowsAndFollowingView.ROUTE, extra: (FollowsAndFollowingViewTab.followers, currentUser!.id)) : null,
+              child: _HomeDrawerHeaderFollowItem(count: currentUser?.followersCount ?? 0, label: 'Seguidores'),
+            ),
           ],
         )
       ],
