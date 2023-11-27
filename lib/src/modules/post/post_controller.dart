@@ -5,6 +5,7 @@ import 'package:sesoft_uni_mobile/src/exceptions/service_exception.dart';
 import 'package:sesoft_uni_mobile/src/helpers/utils/snackbar.dart';
 import 'package:sesoft_uni_mobile/src/modules/post/post_view.dart';
 import 'package:sesoft_uni_mobile/src/services/posts_service.dart';
+import 'package:sesoft_uni_mobile/src/services/timeline_service.dart';
 
 part 'post_controller.freezed.dart';
 part 'post_controller.g.dart';
@@ -15,6 +16,7 @@ class PostState with _$PostState {
     @Default(false) bool replying,
     @Default(false) bool commentIsValid,
     required TextEditingController postCommentTextController,
+    required FocusNode postCommentTextFocusNode,
   }) = _PostState;
 }
 
@@ -30,7 +32,7 @@ class PostController extends _$PostController {
         state = state.copyWith(commentIsValid: true);
       }
     });
-    return PostState(postCommentTextController: postCommentTextController);
+    return PostState(postCommentTextController: postCommentTextController, postCommentTextFocusNode: FocusNode());
   }
 
   PostsService get postsService => ref.read(postsServiceProvider.notifier);
@@ -43,6 +45,8 @@ class PostController extends _$PostController {
       state.postCommentTextController.text = "";
       SesoftSnackbar.success('Seu comentário foi enviado.');
       ref.invalidate(uniquePostVisualizationProvider);
+      state.postCommentTextFocusNode.unfocus();
+      ref.invalidate(timelineServiceProvider);
     } on ServiceException catch (_) {
       SesoftSnackbar.error('Não foi possível postar o comentário.');
     } finally {

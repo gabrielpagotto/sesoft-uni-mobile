@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sesoft_uni_mobile/src/helpers/extensions/build_context.dart';
 import 'package:sesoft_uni_mobile/src/models/user.dart';
 import 'package:sesoft_uni_mobile/src/modules/home/home_controller.dart';
-import 'package:sesoft_uni_mobile/src/modules/profile/profile_view.dart';
 import 'package:sesoft_uni_mobile/src/modules/search_users/search_users_controller.dart';
 import 'package:sesoft_uni_mobile/src/services/user_service.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_loader.dart';
-import 'package:sesoft_uni_mobile/src/widgets/sesoft_profile_icon.dart';
+import 'package:sesoft_uni_mobile/src/widgets/sesoft_user.dart';
 
 part 'search_users_view.g.dart';
 
@@ -79,46 +77,7 @@ class _Body extends ConsumerWidget {
     }
     return ListView(
       key: ref.watch(searchUsersControllerProvider.select((value) => value.pageStorageKey)),
-      children: users
-          .map((user) => GestureDetector(
-                onTap: () => context.push(ProfileView.ROUTE, extra: user.id),
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SesoftProfileIcon(user: user),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              user.profile?.displayName ?? '',
-                              style: const TextStyle(fontSize: 18),
-                            ),
-                            Text(
-                              '@${user.username}',
-                              style: TextStyle(color: context.theme.hintColor),
-                            ),
-                            if (user.profile?.bio != null && user.profile!.bio!.isNotEmpty)
-                              Text(
-                                user.profile?.bio ?? '',
-                                style: context.textTheme.labelLarge,
-                              ),
-                            if (user.extra?.youFollow ?? false)
-                              Text(
-                                'Você segue',
-                                style: TextStyle(color: context.theme.hintColor),
-                              ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ))
-          .toList(),
+      children: users.map((user) => SesoftUser(user: user)).toList(),
     );
   }
 }

@@ -13,6 +13,8 @@ class SesoftTextFormField extends StatefulWidget {
   final String? Function(String? value)? validator;
   final void Function(String value)? onChange;
   final SesoftTextFormFieldType type;
+  final int? minLines;
+  final int? maxLines;
 
   const SesoftTextFormField({
     super.key,
@@ -25,6 +27,8 @@ class SesoftTextFormField extends StatefulWidget {
     this.validator,
     this.onChange,
     this.type = SesoftTextFormFieldType.primary,
+    this.minLines,
+    this.maxLines = 1,
   });
 
   @override
@@ -69,6 +73,8 @@ class _SesoftTextFormFieldState extends State<SesoftTextFormField> with Stateful
             obscureText: obscureText.value,
             validator: widget.validator,
             onChanged: widget.onChange,
+            minLines: widget.minLines,
+            maxLines: widget.maxLines,
             decoration: InputDecoration(
               prefixIcon: widget.prefixIcon,
               hintText: widget.hintText,

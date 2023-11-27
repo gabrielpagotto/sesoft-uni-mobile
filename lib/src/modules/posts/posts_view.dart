@@ -25,6 +25,7 @@ class _PostsViewState extends ConsumerState<PostsView> {
       error: (error, trace) {
         if (kDebugMode) {
           print(error);
+          print(trace);
         }
         return const Text('Ocorreu um erro');
       },
@@ -53,10 +54,15 @@ class _PostsViewState extends ConsumerState<PostsView> {
         ),
       ),
       data: (posts) => ListView.separated(
+        padding: const EdgeInsets.only(bottom: 70),
         key: postsState.pageStorageKey,
         itemCount: posts.length,
         itemBuilder: (context, index) => Consumer(builder: (context, ref, _) {
-          return SesoftPost(post: ref.watch(postsControllerProvider.select((value) => posts[index])));
+          return SesoftPost(
+            post: ref.watch(
+              postsControllerProvider.select((value) => posts[index]),
+            ),
+          );
         }),
         separatorBuilder: (context, index) => const Divider(height: 0),
       ),

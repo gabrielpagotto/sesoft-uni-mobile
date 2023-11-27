@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sesoft_uni_mobile/src/clients/sesoft_client.dart';
+import 'package:sesoft_uni_mobile/src/models/post.dart';
 import 'package:sesoft_uni_mobile/src/models/user.dart';
 
 part 'user_service.freezed.dart';
@@ -36,5 +37,41 @@ class UserService extends _$UserService {
     }
     final response = await client.get('/users', queryParameters: qp);
     return response.data['result'].map<User>((e) => User.fromJson(e)).toList();
+  }
+
+  Future<List<Post>> userPosts(String userId) async {
+    final client = ref.read(sesoftClientProvider);
+    final response = await client.get('/users/$userId/posts');
+
+    return response.data.map<Post>((e) => Post.fromJson(e)).toList();
+  }
+
+  Future<List<Post>> userPostsLiked(String userId) async {
+    final client = ref.read(sesoftClientProvider);
+    final response = await client.get('/users/$userId/posts/liked');
+
+    return response.data.map<Post>((e) => Post.fromJson(e)).toList();
+  }
+
+  Future<List<User>> userFollowing(String userId) async {
+    final client = ref.read(sesoftClientProvider);
+    final response = await client.get('/users/$userId/following');
+    return response.data['result'].map<User>((e) => User.fromJson(e)).toList();
+  }
+
+  Future<List<User>> userFollowers(String userId) async {
+    final client = ref.read(sesoftClientProvider);
+    final response = await client.get('/users/$userId/followers');
+    return response.data['result'].map<User>((e) => User.fromJson(e)).toList();
+  }
+
+  Future<void> follow(String userId) async {
+    final client = ref.read(sesoftClientProvider);
+    await client.post('/users/$userId/follow');
+  }
+
+  Future<void> unfollow(String userId) async {
+    final client = ref.read(sesoftClientProvider);
+    await client.post('/users/$userId/unfollow');
   }
 }

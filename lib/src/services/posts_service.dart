@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sesoft_uni_mobile/src/clients/sesoft_client.dart';
@@ -11,9 +13,17 @@ class PostsService extends _$PostsService {
   @override
   List build() => [];
 
-  Future<void> create(String content) async {
+  Future<void> create(String content, [List<File> files = const []]) async {
     final client = ref.read(sesoftClientProvider);
-    await client.post('/posts', data: {'content': content});
+    final multipartFiles = <MultipartFile>[];
+    for (final file in files) {
+      multipartFiles.add(await MultipartFile.fromFile(file.path));
+    }
+    final formData = FormData.fromMap({
+      'content': content,
+      'files': multipartFiles,
+    });
+    await client.post('/posts', data: formData);
   }
 
   Future<void> like(String postId) async {

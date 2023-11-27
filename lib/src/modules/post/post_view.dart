@@ -2,10 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sesoft_uni_mobile/src/constants/fake_data.dart';
+import 'package:sesoft_uni_mobile/src/exceptions/service_exception.dart';
+import 'package:sesoft_uni_mobile/src/helpers/utils/share_util.dart';
 import 'package:sesoft_uni_mobile/src/models/post.dart';
 import 'package:sesoft_uni_mobile/src/modules/post/post_controller.dart';
+import 'package:sesoft_uni_mobile/src/modules/posts/posts_controller.dart';
 import 'package:sesoft_uni_mobile/src/services/posts_service.dart';
+import 'package:sesoft_uni_mobile/src/services/timeline_service.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_post.dart';
+import 'package:sesoft_uni_mobile/src/widgets/sesoft_post_image.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_profile_icon.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_scaffold.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -46,99 +51,168 @@ class PostView extends ConsumerWidget {
   }
 }
 
-class _Body extends StatelessWidget {
+class _Body extends ConsumerWidget {
   const _Body({required this.post});
 
   final Post post;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       body: ListView(
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
+            padding: const EdgeInsets.only(top: 10),
             child: Column(
               children: [
-                if (post.user == null) const SizedBox.shrink(),
-                if (post.user != null)
-                  Row(
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Column(
                     children: [
-                      SesoftProfileIcon(
-                        user: post.user!,
-                        size: 42,
+                      if (post.user == null) const SizedBox.shrink(),
+                      if (post.user != null)
+                        Row(
+                          children: [
+                            SesoftProfileIcon(
+                              user: post.user!,
+                              size: 42,
+                            ),
+                            const SizedBox(width: 16.0),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  post.user!.profile?.displayName ?? '',
+                                  textAlign: TextAlign.start,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18.0,
+                                  ),
+                                ),
+                                Text(
+                                  post.user!.username,
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 16.0,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      const SizedBox(height: 16.0),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          post.content,
+                          textAlign: TextAlign.start,
+                          style: const TextStyle(fontSize: 16.0),
+                        ),
                       ),
-                      const SizedBox(width: 16.0),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      const SizedBox(height: 16.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            post.user!.profile?.displayName ?? '',
-                            textAlign: TextAlign.start,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18.0,
-                            ),
+                          Row(
+                            children: [
+                              const IconButton(
+                                onPressed: null,
+                                icon: Icon(Icons.mode_comment),
+                                iconSize: 15,
+                                padding: EdgeInsets.zero,
+                              ),
+                              Text(post.repliesCount.toString()),
+                            ],
                           ),
-                          Text(
-                            post.user!.username,
-                            style: const TextStyle(
-                              color: Colors.grey,
-                              fontSize: 16.0,
-                            ),
+                          Row(
+                            children: [
+                              IconButton(
+                                onPressed: () => _handleLike(ref),
+                                icon: Icon(
+                                  post.userLiked == true ? Icons.favorite : Icons.favorite_border,
+                                  color: post.userLiked == true ? Colors.red : null,
+                                ),
+                                iconSize: 15,
+                                padding: EdgeInsets.zero,
+                              ),
+                              Text(post.likesCount.toString()),
+                            ],
+                          ),
+                          IconButton(
+                            onPressed: () => ShareUtil.sharePost(post),
+                            icon: const Icon(Icons.ios_share),
+                            iconSize: 15,
+                            padding: EdgeInsets.zero,
                           ),
                         ],
                       ),
                     ],
                   ),
-                const SizedBox(height: 16.0),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    post.content,
-                    textAlign: TextAlign.start,
-                    style: const TextStyle(fontSize: 16.0),
-                  ),
                 ),
-                const SizedBox(height: 16.0),
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: () => {},
-                      icon: Icon(
-                        post.userLiked == true ? Icons.favorite : Icons.favorite_border,
-                        color: post.userLiked == true ? Colors.red : null,
+                if (post.files.isNotEmpty)
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Row(children: post.files.map((e) => SesoftPostImage(storage: e)).toList()),
                       ),
-                      iconSize: 15,
-                      padding: EdgeInsets.zero,
                     ),
-                    Text(post.likesCount.toString()),
-                  ],
+                  ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Consumer(builder: (context, ref, _) {
+                    return TextField(
+                      controller: ref.watch(postControllerProvider.select((value) => value.postCommentTextController)),
+                      focusNode: ref.watch(postControllerProvider.select((value) => value.postCommentTextFocusNode)),
+                      decoration: InputDecoration(
+                        hintText: 'Adicione um comentário',
+                        suffixIcon: Consumer(builder: (context, ref, _) {
+                          return IconButton(
+                            icon: const Icon(Icons.send),
+                            onPressed: ref.watch(postControllerProvider.select((value) => value.replying || !value.commentIsValid))
+                                ? null
+                                : () => ref.read(postControllerProvider.notifier).reply(post.id),
+                          );
+                        }),
+                      ),
+                    );
+                  }),
                 ),
-                Consumer(builder: (context, ref, _) {
-                  return TextField(
-                    controller: ref.watch(postControllerProvider).postCommentTextController,
-                    decoration: InputDecoration(
-                      hintText: 'Adicione um comentário',
-                      suffixIcon: Consumer(builder: (context, ref, _) {
-                        return IconButton(
-                          icon: const Icon(Icons.send),
-                          onPressed: ref.watch(postControllerProvider.select((value) => value.replying || !value.commentIsValid))
-                              ? null
-                              : () => ref.read(postControllerProvider.notifier).reply(post.id),
-                        );
-                      }),
-                    ),
-                  );
-                }),
               ],
             ),
           ),
           Column(
-            children: post.replies.map((e) => SesoftPost(post: e)).toList(),
+            children: post.replies.map(
+              (e) {
+                return Consumer(builder: (context, ref, _) {
+                  return SesoftPost(key: ValueKey(e.id), post: e);
+                });
+              },
+            ).toList(),
           ),
         ],
       ),
     );
+  }
+
+  void _handleLike(WidgetRef ref) async {
+    final postsService = ref.read(postsServiceProvider.notifier);
+    if (!(post.userLiked ?? true)) {
+      try {
+        await postsService.like(post.id);
+        ref.read(postsControllerProvider.notifier);
+        ref.read(timelineServiceProvider.notifier).setPostRate(post.id, true);
+        ref.invalidate(uniquePostVisualizationProvider);
+      } on ServiceException catch (_) {}
+    } else {
+      try {
+        await postsService.unlike(post.id);
+        ref.read(postsControllerProvider.notifier);
+        ref.read(timelineServiceProvider.notifier).setPostRate(post.id, false);
+        ref.invalidate(uniquePostVisualizationProvider);
+      } on ServiceException catch (_) {}
+    }
   }
 }

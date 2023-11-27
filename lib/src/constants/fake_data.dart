@@ -76,3 +76,86 @@ const fakePostForOnePostView = Post(
     ),
   ],
 );
+
+final fakeUsersList = [
+  const User(
+    id: '',
+    email: 'gabriel.pagotto@icloud.com',
+    username: 'gabrielpagotto',
+    profile: Profile(
+      id: '',
+      displayName: 'Gabriel',
+      bio: 'Somente curtindo a aplicação da melhor forma possível',
+    ),
+  ),
+  const User(
+    id: '',
+    email: 'gabriel.pagotto@icloud.com',
+    username: 'gabrielpagotto',
+    profile: Profile(
+      id: '',
+      displayName: 'Gabriel',
+      bio: 'Somente curtindo a aplicação da melhor forma possível',
+    ),
+  ),
+  const User(
+    id: '',
+    email: 'gabriel.pagotto@icloud.com',
+    username: 'gabrielpagotto',
+    profile: Profile(
+      id: '',
+      displayName: 'Gabriel',
+      bio: 'Somente curtindo a aplicação da melhor forma possível',
+    ),
+  ),
+  const User(
+    id: '',
+    email: 'gabriel.pagotto@icloud.com',
+    username: 'gabrielpagotto',
+    profile: Profile(
+      id: '',
+      displayName: 'Gabriel',
+      bio: 'Somente curtindo a aplicação da melhor forma possível',
+    ),
+  ),
+  const User(
+    id: '',
+    email: 'gabriel.pagotto@icloud.com',
+    username: 'gabrielpagotto',
+    profile: Profile(
+      id: '',
+      displayName: 'Gabriel',
+      bio: 'Somente curtindo a aplicação da melhor forma possível',
+    ),
+  ),
+  const User(
+    id: '',
+    email: 'gabriel.pagotto@icloud.com',
+    username: 'gabrielpagotto',
+    profile: Profile(
+      id: '',
+      displayName: 'Gabriel',
+      bio: 'Somente curtindo a aplicação da melhor forma possível',
+    ),
+  ),
+  const User(
+    id: '',
+    email: 'gabriel.pagotto@icloud.com',
+    username: 'gabrielpagotto',
+    profile: Profile(
+      id: '',
+      displayName: 'Gabriel',
+      bio: 'Somente curtindo a aplicação da melhor forma possível',
+    ),
+  ),
+  const User(
+    id: '',
+    email: 'gabriel.pagotto@icloud.com',
+    username: 'gabrielpagotto',
+    profile: Profile(
+      id: '',
+      displayName: 'Gabriel',
+      bio: 'Somente curtindo a aplicação da melhor forma possível',
+    ),
+  ),
+];
