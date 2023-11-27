@@ -27,7 +27,7 @@ class Post with _$Post {
     DateTime? createdAt,
     DateTime? updatedAt,
     @Default(false) bool liked,
-    @Default(false) bool? userLiked,
+    bool? userLiked,
     @Default([]) List<Post> replies,
     // ignore: invalid_annotation_target
     @JsonKey(readValue: _readValueFiles) @Default([]) List<Storage> files,

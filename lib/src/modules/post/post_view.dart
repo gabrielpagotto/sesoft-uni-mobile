@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sesoft_uni_mobile/src/constants/fake_data.dart';
+import 'package:sesoft_uni_mobile/src/exceptions/service_exception.dart';
+import 'package:sesoft_uni_mobile/src/helpers/utils/share_util.dart';
 import 'package:sesoft_uni_mobile/src/models/post.dart';
 import 'package:sesoft_uni_mobile/src/modules/post/post_controller.dart';
+import 'package:sesoft_uni_mobile/src/modules/posts/posts_controller.dart';
 import 'package:sesoft_uni_mobile/src/services/posts_service.dart';
+import 'package:sesoft_uni_mobile/src/services/timeline_service.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_post.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_post_image.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_profile_icon.dart';
@@ -47,13 +51,13 @@ class PostView extends ConsumerWidget {
   }
 }
 
-class _Body extends StatelessWidget {
+class _Body extends ConsumerWidget {
   const _Body({required this.post});
 
   final Post post;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       body: ListView(
         children: [
@@ -107,17 +111,39 @@ class _Body extends StatelessWidget {
                       ),
                       const SizedBox(height: 16.0),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
+                          Row(
+                            children: [
+                              const IconButton(
+                                onPressed: null,
+                                icon: Icon(Icons.mode_comment),
+                                iconSize: 15,
+                                padding: EdgeInsets.zero,
+                              ),
+                              Text(post.repliesCount.toString()),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              IconButton(
+                                onPressed: () => _handleLike(ref),
+                                icon: Icon(
+                                  post.userLiked == true ? Icons.favorite : Icons.favorite_border,
+                                  color: post.userLiked == true ? Colors.red : null,
+                                ),
+                                iconSize: 15,
+                                padding: EdgeInsets.zero,
+                              ),
+                              Text(post.likesCount.toString()),
+                            ],
+                          ),
                           IconButton(
-                            onPressed: () => {},
-                            icon: Icon(
-                              post.userLiked == true ? Icons.favorite : Icons.favorite_border,
-                              color: post.userLiked == true ? Colors.red : null,
-                            ),
+                            onPressed: () => ShareUtil.sharePost(post),
+                            icon: const Icon(Icons.ios_share),
                             iconSize: 15,
                             padding: EdgeInsets.zero,
                           ),
-                          Text(post.likesCount.toString()),
                         ],
                       ),
                     ],
@@ -158,10 +184,35 @@ class _Body extends StatelessWidget {
             ),
           ),
           Column(
-            children: post.replies.map((e) => SesoftPost(post: e)).toList(),
+            children: post.replies.map(
+              (e) {
+                return Consumer(builder: (context, ref, _) {
+                  return SesoftPost(key: ValueKey(e.id), post: e);
+                });
+              },
+            ).toList(),
           ),
         ],
       ),
     );
+  }
+
+  void _handleLike(WidgetRef ref) async {
+    final postsService = ref.read(postsServiceProvider.notifier);
+    if (!(post.userLiked ?? true)) {
+      try {
+        await postsService.like(post.id);
+        ref.read(postsControllerProvider.notifier);
+        ref.read(timelineServiceProvider.notifier).setPostRate(post.id, true);
+        ref.invalidate(uniquePostVisualizationProvider);
+      } on ServiceException catch (_) {}
+    } else {
+      try {
+        await postsService.unlike(post.id);
+        ref.read(postsControllerProvider.notifier);
+        ref.read(timelineServiceProvider.notifier).setPostRate(post.id, false);
+        ref.invalidate(uniquePostVisualizationProvider);
+      } on ServiceException catch (_) {}
+    }
   }
 }

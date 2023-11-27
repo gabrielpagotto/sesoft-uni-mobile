@@ -58,7 +58,11 @@ class _PostsViewState extends ConsumerState<PostsView> {
         key: postsState.pageStorageKey,
         itemCount: posts.length,
         itemBuilder: (context, index) => Consumer(builder: (context, ref, _) {
-          return SesoftPost(post: ref.watch(postsControllerProvider.select((value) => posts[index])));
+          return SesoftPost(
+            post: ref.watch(
+              postsControllerProvider.select((value) => posts[index]),
+            ),
+          );
         }),
         separatorBuilder: (context, index) => const Divider(height: 0),
       ),

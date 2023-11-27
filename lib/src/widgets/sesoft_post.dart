@@ -3,10 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sesoft_uni_mobile/src/exceptions/service_exception.dart';
 import 'package:sesoft_uni_mobile/src/helpers/extensions/build_context.dart';
+import 'package:sesoft_uni_mobile/src/helpers/utils/share_util.dart';
 import 'package:sesoft_uni_mobile/src/helpers/utils/snackbar.dart';
 import 'package:sesoft_uni_mobile/src/models/post.dart';
 import 'package:sesoft_uni_mobile/src/modules/post/post_view.dart';
-import 'package:sesoft_uni_mobile/src/modules/posts/posts_controller.dart';
+import 'package:sesoft_uni_mobile/src/modules/profile/profile_view.dart';
 import 'package:sesoft_uni_mobile/src/services/posts_service.dart';
 import 'package:sesoft_uni_mobile/src/services/timeline_service.dart';
 import 'package:sesoft_uni_mobile/src/widgets/sesoft_post_image.dart';
@@ -19,6 +20,15 @@ class SesoftPost extends ConsumerWidget {
 
   Future<void> handleRate(WidgetRef ref) async {
     try {
+      if (post.userLiked != null) {
+        if (post.userLiked!) {
+          await unlike(ref);
+        } else {
+          await like(ref);
+        }
+        return;
+      }
+
       if (post.liked) {
         await unlike(ref);
         return;
@@ -35,12 +45,12 @@ class SesoftPost extends ConsumerWidget {
 
     try {
       await postsService.like(post.id);
-      ref.read(postsControllerProvider.notifier);
       ref.read(timelineServiceProvider.notifier).setPostRate(post.id, true);
-
-      showSnackbarSuccess('Publicação curtida!');
-    } on ServiceException catch (err) {
-      showSnackbarError(err.message);
+      ref.invalidate(uniquePostVisualizationProvider);
+      ref.invalidate(getPostsProfileViewProvider);
+      ref.invalidate(getLikedPostsProfileViewProvider);
+    } on ServiceException catch (_) {
+      // Do nothing
     }
   }
 
@@ -49,12 +59,12 @@ class SesoftPost extends ConsumerWidget {
 
     try {
       await postsService.unlike(post.id);
-      ref.read(postsControllerProvider.notifier);
       ref.read(timelineServiceProvider.notifier).setPostRate(post.id, false);
-
-      showSnackbarSuccess('Publicação descurtida!');
-    } on ServiceException catch (err) {
-      showSnackbarError(err.message);
+      ref.invalidate(uniquePostVisualizationProvider);
+      ref.invalidate(getPostsProfileViewProvider);
+      ref.invalidate(getLikedPostsProfileViewProvider);
+    } on ServiceException catch (_) {
+      // Do nothing
     }
   }
 
@@ -74,9 +84,7 @@ class SesoftPost extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Ink(
       child: InkWell(
-        onTap: () {
-          _toPost(context);
-        },
+        onTap: () => _toPost(context),
         child: Column(
           children: [
             Padding(
@@ -136,7 +144,7 @@ class SesoftPost extends ConsumerWidget {
                   Row(
                     children: [
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () => _toPost(context),
                         icon: const Icon(Icons.mode_comment),
                         iconSize: 15,
                         padding: EdgeInsets.zero,
@@ -149,8 +157,8 @@ class SesoftPost extends ConsumerWidget {
                       IconButton(
                         onPressed: () => handleRate(ref),
                         icon: Icon(
-                          post.liked ? Icons.favorite : Icons.favorite_border,
-                          color: post.liked ? Colors.red : null,
+                          post.liked || (post.userLiked ?? false) ? Icons.favorite : Icons.favorite_border,
+                          color: post.liked || (post.userLiked ?? false) ? Colors.red : null,
                         ),
                         iconSize: 15,
                         padding: EdgeInsets.zero,
@@ -159,7 +167,7 @@ class SesoftPost extends ConsumerWidget {
                     ],
                   ),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () => ShareUtil.sharePost(post),
                     icon: const Icon(Icons.ios_share),
                     iconSize: 15,
                     padding: EdgeInsets.zero,

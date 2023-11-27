@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:sesoft_uni_mobile/src/constants/fake_data.dart';
 import 'package:sesoft_uni_mobile/src/helpers/extensions/build_context.dart';
 import 'package:sesoft_uni_mobile/src/helpers/providers/current_user.dart';
 import 'package:sesoft_uni_mobile/src/models/post.dart';
@@ -39,7 +38,7 @@ Future<List<Post>> getLikedPostsProfileView(GetLikedPostsProfileViewRef ref, Str
   return userService.userPostsLiked(userId);
 }
 
-class ProfileView extends ConsumerWidget {
+class ProfileView extends ConsumerStatefulWidget {
   final String? userId;
 
   const ProfileView({super.key, required this.userId});
@@ -48,116 +47,117 @@ class ProfileView extends ConsumerWidget {
   static const ROUTE = '/profile';
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final userAsyncValue = ref.watch(getUserProfileViewProvider(userId));
+  ConsumerState<ProfileView> createState() => _ProfileViewState();
+}
+
+class _ProfileViewState extends ConsumerState<ProfileView> with SingleTickerProviderStateMixin {
+  var tabIndex = 0;
+
+  late final tabController = TabController(length: 2, vsync: this);
+
+  @override
+  void initState() {
+    tabController.addListener(() {
+      setState(() {
+        tabIndex = tabController.index;
+      });
+    });
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final userAsyncValue = ref.watch(getUserProfileViewProvider(widget.userId));
 
     final String? userProfileId = userAsyncValue.when(
       data: (data) => data.id,
       error: (error, stack) {
         return null;
       },
-      loading: () {
-        return null;
-      },
+      loading: () => null,
     );
 
-    return DefaultTabController(
-      length: 2,
-      initialIndex: 0,
-      child: Scaffold(
-        floatingActionButton: ref.watch(authServiceProvider.select((value) => value.currentUser))?.id == userId || userId == null
-            ? FloatingActionButton(
-                onPressed: () => context.push(EditProfileView.ROUTE),
-                child: const Icon(Icons.edit),
-              )
-            : null,
-        body: Consumer(builder: (context, ref, child) {
-          return CustomScrollView(
-            controller: ref.watch(profileControllerProvider.select((value) => value.scrollController)),
-            slivers: [
-              SliverAppBar(
-                bottom: const PreferredSize(
-                  preferredSize: Size.fromHeight(50),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      TabBar(tabs: [
+    return Scaffold(
+      floatingActionButton: ref.watch(authServiceProvider.select((value) => value.currentUser))?.id == widget.userId || widget.userId == null
+          ? FloatingActionButton(
+              onPressed: () => context.push(EditProfileView.ROUTE),
+              child: const Icon(Icons.edit),
+            )
+          : null,
+      body: Consumer(builder: (context, ref, child) {
+        return CustomScrollView(
+          controller: ref.watch(profileControllerProvider.select((value) => value.scrollController)),
+          slivers: [
+            SliverAppBar(
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(50),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TabBar(
+                      controller: tabController,
+                      tabs: const [
                         Tab(text: 'Postagens'),
                         Tab(text: 'Curtidas'),
-                      ]),
-                      Divider(height: 0),
-                    ],
-                  ),
-                ),
-                forceElevated: true,
-                expandedHeight: 325,
-                pinned: true,
-                flexibleSpace: FlexibleSpaceBar(
-                  stretchModes: const [StretchMode.fadeTitle],
-                  centerTitle: false,
-                  title: Padding(
-                    padding: const EdgeInsets.only(bottom: 40),
-                    child: userAsyncValue.when(
-                      data: (user) => _ProfileHeaderInfos(user),
-                      error: (err, stack) => const Text("Ocorreu um erro ao buscar"),
-                      loading: () => const Skeletonizer(child: _ProfileHeaderInfos(null)),
+                      ],
                     ),
-                  ),
-                  collapseMode: CollapseMode.parallax,
-                ),
-              ),
-              SliverFillRemaining(
-                child: TabBarView(
-                  children: [
-                    Consumer(builder: (context, ref, child) {
-                      final postsAsyncValue = ref.watch(getPostsProfileViewProvider(userProfileId ?? ''));
-
-                      return postsAsyncValue.when(
-                        data: (posts) {
-                          return UserPostsList(posts: posts);
-                        },
-                        loading: () => Skeletonizer(
-                          child: ListView.separated(
-                            itemCount: 5,
-                            itemBuilder: (context, index) {
-                              return const SesoftPost(post: fakePostForOnePostView);
-                            },
-                            separatorBuilder: (context, index) {
-                              return const Divider(height: 0);
-                            },
-                          ),
-                        ),
-                        error: (err, stack) => const Text("Ocorreu um erro ao buscar"),
-                      );
-                    }),
-                    Consumer(builder: (context, ref, child) {
-                      final likedPostsAsyncValue = ref.watch(getLikedPostsProfileViewProvider(userProfileId ?? ''));
-
-                      return likedPostsAsyncValue.when(
-                        data: (likedPosts) {
-                          return UserPostsList(posts: likedPosts);
-                        },
-                        loading: () => Skeletonizer(
-                          child: ListView.separated(
-                            itemCount: 5,
-                            itemBuilder: (context, index) {
-                              return const SesoftPost(post: fakePostForOnePostView);
-                            },
-                            separatorBuilder: (context, index) {
-                              return const Divider(height: 0);
-                            },
-                          ),
-                        ),
-                        error: (err, stack) => const Text("Ocorreu um erro ao buscar"),
-                      );
-                    }),
+                    const Divider(height: 0),
                   ],
                 ),
               ),
-            ],
-          );
-        }),
-      ),
+              forceElevated: true,
+              expandedHeight: 325,
+              pinned: true,
+              flexibleSpace: FlexibleSpaceBar(
+                stretchModes: const [StretchMode.fadeTitle],
+                centerTitle: false,
+                title: Padding(
+                  padding: const EdgeInsets.only(bottom: 40),
+                  child: userAsyncValue.when(
+                    data: (user) => _ProfileHeaderInfos(user),
+                    error: (err, stack) => const Text("Ocorreu um erro ao buscar"),
+                    loading: () => const Skeletonizer(child: _ProfileHeaderInfos(null)),
+                  ),
+                ),
+                collapseMode: CollapseMode.parallax,
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: tabIndex == 0
+                  ? IntrinsicHeight(
+                      child: Consumer(builder: (context, ref, child) {
+                        final postsAsyncValue = ref.watch(getPostsProfileViewProvider(userProfileId ?? ''));
+
+                        return postsAsyncValue.when(
+                          data: (posts) {
+                            return UserPostsList(posts: posts);
+                          },
+                          loading: () => const Skeletonizer(
+                            child: UserPostsList(posts: []),
+                          ),
+                          error: (err, stack) => const Text("Ocorreu um erro ao buscar"),
+                        );
+                      }),
+                    )
+                  : IntrinsicHeight(
+                      child: Consumer(builder: (context, ref, child) {
+                        final likedPostsAsyncValue = ref.watch(getLikedPostsProfileViewProvider(userProfileId ?? ''));
+
+                        return likedPostsAsyncValue.when(
+                          data: (likedPosts) {
+                            return UserPostsList(posts: likedPosts);
+                          },
+                          loading: () => const Skeletonizer(
+                            child: UserPostsList(posts: []),
+                          ),
+                          error: (err, stack) => const Text("Ocorreu um erro ao buscar"),
+                        );
+                      }),
+                    ),
+            ),
+          ],
+        );
+      }),
     );
   }
 }
@@ -169,18 +169,21 @@ class UserPostsList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return CustomScrollView(
-      slivers: [
-        SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (context, index) {
-              final post = posts[index];
-              return SesoftPost(post: post);
-            },
-            childCount: posts.length,
-          ),
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 120),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: posts
+            .map(
+              (post) => Column(
+                children: [
+                  SesoftPost(post: post),
+                  const Divider(height: 0),
+                ],
+              ),
+            )
+            .toList(),
+      ),
     );
   }
 }

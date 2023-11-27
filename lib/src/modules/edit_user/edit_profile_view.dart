@@ -23,6 +23,7 @@ class EditProfileView extends ConsumerWidget {
             user: ref.watch(editProfileControllerProvider.select((value) => value.userEditing)),
             callProfileOnClick: false,
             size: 90,
+            openImageOnTap: true,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
