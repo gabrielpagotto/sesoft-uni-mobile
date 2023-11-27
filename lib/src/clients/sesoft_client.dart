@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:sesoft_uni_mobile/src/constants/host.dart';
 import 'package:sesoft_uni_mobile/src/services/auth_service.dart';
 
 part 'sesoft_client.g.dart';
@@ -9,8 +10,7 @@ Dio sesoftClient<T>(SesoftClientRef ref) {
   final authStatus = ref.watch(authServiceProvider.select((value) => value.authStatus));
   final authService = ref.read(authServiceProvider.notifier);
   final baseOptions = BaseOptions(
-    baseUrl: 'https://sesoft-uni-backend-development.up.railway.app',
-    // baseUrl: 'http://10.11.0.215:4000',
+    baseUrl: BACKEND_HOST,
     validateStatus: (status) => _validateStatus(status, authStatus),
   );
   final client = Dio(baseOptions);
